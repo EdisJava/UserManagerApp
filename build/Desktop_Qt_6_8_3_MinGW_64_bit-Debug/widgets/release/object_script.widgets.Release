@@ -1,0 +1,14 @@
+release/adminempresa.o
+release/dptoform.o
+release/main.o
+release/empresaform.o
+release/mainadmi.o
+release/users.o
+release/usuarioform.o
+release/qrc_resources.o
+release/moc_adminempresa.o
+release/moc_dptoform.o
+release/moc_empresaform.o
+release/moc_mainadmi.o
+release/moc_users.o
+release/moc_usuarioform.o
