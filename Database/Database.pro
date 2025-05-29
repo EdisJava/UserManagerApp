@@ -1,22 +1,21 @@
-QT -= gui
+QT += sql
 
 TEMPLATE = lib
-DEFINES += DATABASE_LIBRARY
+CONFIG += staticlib  # o shared si prefieres usar una DLL
+TARGET = Database
 
+DEFINES += DATABASE_LIBRARY
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+HEADERS += \
+    database.h
 
 SOURCES += \
     database.cpp
 
-HEADERS += \
-    Database_global.h \
-    database.h
+INCLUDEPATH += $$PWD  # ¡IMPORTANTE! Para que otros subproyectos encuentren database.h
 
-# Default rules for deployment.
+# Instala la librería generada
 unix {
     target.path = /usr/lib
 }

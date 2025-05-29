@@ -2,7 +2,9 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Database \
-    main-app \
     models \
     widgets
 
+# Asegura el orden de compilación
+models.depends = Database
+widgets.depends = Database

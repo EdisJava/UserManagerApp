@@ -1,23 +1,36 @@
 #ifndef EMPRESAFORM_H
 #define EMPRESAFORM_H
 
-#include <QMainWindow>
+#include <QDialog>
 
-QT_BEGIN_NAMESPACE
 namespace Ui {
-class empresaForm;
+class EmpresaForm;
 }
-QT_END_NAMESPACE
 
-class empresaForm : public QMainWindow
+class EmpresaForm : public QDialog
 {
     Q_OBJECT
 
 public:
-    empresaForm(QWidget *parent = nullptr);
-    ~empresaForm();
+    explicit EmpresaForm(QWidget *parent = nullptr);
+    ~EmpresaForm();
+
+signals:
+    void empresaGuardada(const QString &nombre);
+
+private slots:
+
+    void onCrearClicked();
+    void onBorrarClicked();
+    void onEditarClicked();
+    void onDeptClicked();
 
 private:
-    Ui::empresaForm *ui;
+    Ui::EmpresaForm *ui;
+    QString rutaArchivo;
+
+    void cargarLista();
+    void guardarLista();
 };
+
 #endif // EMPRESAFORM_H

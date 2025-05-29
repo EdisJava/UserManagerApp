@@ -1,18 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dptoForm</class>
- <widget class="QWidget" name="dptoForm">
+ <class>DptoForm</class>
+ <widget class="QWidget" name="DptoForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>493</width>
+    <height>314</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Departamento</string>
   </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QListWidget" name="listWidget"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnCrear">
+     <property name="text">
+      <string>Crear</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnBorrar">
+     <property name="text">
+      <string>Borrar</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnEditar">
+     <property name="text">
+      <string>Editar</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnAsignarUsr">
+     <property name="text">
+      <string>Asignar</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

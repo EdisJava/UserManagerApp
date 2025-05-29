@@ -1,12 +1,16 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "Database_global.h"
+#include <QtSql/QSqlDatabase>
+#include <QString>
 
-class DATABASE_EXPORT Database
-{
+class database {
 public:
-    Database();
+    static bool connect(const QString &dbPath);
+    static QSqlDatabase& get();
+
+private:
+    static QSqlDatabase db;
 };
 
 #endif // DATABASE_H

@@ -1,42 +1,45 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui sql widgets
 
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+TEMPLATE = app
+TARGET = widgets
 
 SOURCES += \
-    adminempresa.cpp \
+    admicompany.cpp \
     dptoform.cpp \
-    main.cpp \
     empresaform.cpp \
+    guess.cpp \
+    main.cpp \
     mainadmi.cpp \
-    users.cpp \
-    usuarioform.cpp
+    mainwindow.cpp \
+    userform.cpp \
+    users.cpp
 
 HEADERS += \
-    adminempresa.h \
+    admicompany.h \
     dptoform.h \
     empresaform.h \
+    guess.h \
     mainadmi.h \
-    users.h \
-    usuarioform.h
+    mainwindow.h \
+    userform.h \
+    users.h
 
 FORMS += \
-    adminempresa.ui \
+    admicompany.ui \
     dptoform.ui \
     empresaform.ui \
+    guess.ui \
     mainadmi.ui \
-    users.ui \
-    usuarioform.ui
+    mainwindow.ui \
+    userform.ui \
+    users.ui
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+# Incluye la carpeta del subproyecto Database
+INCLUDEPATH += $$PWD/../Database
 
-RESOURCES += \
-    resources.qrc
+LIBS += -L$$OUT_PWD/../Database/debug -lDatabase
+
+# Si usas librerías compartidas (.dll/.so), añade esto
+# QMAKE_RPATHDIR += $$OUT_PWD/../Database

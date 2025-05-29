@@ -423,10 +423,10 @@ Makefile: ../../../widgets/widgets.pro C:/Qt/6.8.3/mingw_64/mkspecs/win32-g++/qm
 		../../../widgets/widgets.pro \
 		C:/Qt/6.8.3/mingw_64/lib/Qt6Widgets.prl \
 		C:/Qt/6.8.3/mingw_64/lib/Qt6Gui.prl \
+		C:/Qt/6.8.3/mingw_64/lib/Qt6Sql.prl \
 		C:/Qt/6.8.3/mingw_64/lib/Qt6Core.prl \
 		C:/Qt/6.8.3/mingw_64/lib/Qt6EntryPoint.prl \
-		C:/Qt/6.8.3/mingw_64/mkspecs/features/build_pass.prf \
-		../../../widgets/resources.qrc
+		C:/Qt/6.8.3/mingw_64/mkspecs/features/build_pass.prf
 	$(QMAKE) -o Makefile ..\..\..\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 C:/Qt/6.8.3/mingw_64/mkspecs/features/spec_pre.prf:
 C:/Qt/6.8.3/mingw_64/mkspecs/features/device_config.prf:
@@ -781,10 +781,10 @@ C:/Qt/6.8.3/mingw_64/mkspecs/features/lex.prf:
 ../../../widgets/widgets.pro:
 C:/Qt/6.8.3/mingw_64/lib/Qt6Widgets.prl:
 C:/Qt/6.8.3/mingw_64/lib/Qt6Gui.prl:
+C:/Qt/6.8.3/mingw_64/lib/Qt6Sql.prl:
 C:/Qt/6.8.3/mingw_64/lib/Qt6Core.prl:
 C:/Qt/6.8.3/mingw_64/lib/Qt6EntryPoint.prl:
 C:/Qt/6.8.3/mingw_64/mkspecs/features/build_pass.prf:
-../../../widgets/resources.qrc:
 qmake: FORCE
 	@$(QMAKE) -o Makefile ..\..\..\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 

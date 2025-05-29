@@ -11,34 +11,74 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
-class Ui_dptoForm
+class Ui_DptoForm
 {
 public:
+    QVBoxLayout *verticalLayout;
+    QListWidget *listWidget;
+    QPushButton *btnCrear;
+    QPushButton *btnBorrar;
+    QPushButton *btnEditar;
+    QPushButton *btnAsignarUsr;
 
-    void setupUi(QWidget *dptoForm)
+    void setupUi(QWidget *DptoForm)
     {
-        if (dptoForm->objectName().isEmpty())
-            dptoForm->setObjectName("dptoForm");
-        dptoForm->resize(400, 300);
+        if (DptoForm->objectName().isEmpty())
+            DptoForm->setObjectName("DptoForm");
+        DptoForm->resize(493, 314);
+        verticalLayout = new QVBoxLayout(DptoForm);
+        verticalLayout->setObjectName("verticalLayout");
+        listWidget = new QListWidget(DptoForm);
+        listWidget->setObjectName("listWidget");
 
-        retranslateUi(dptoForm);
+        verticalLayout->addWidget(listWidget);
 
-        QMetaObject::connectSlotsByName(dptoForm);
+        btnCrear = new QPushButton(DptoForm);
+        btnCrear->setObjectName("btnCrear");
+
+        verticalLayout->addWidget(btnCrear);
+
+        btnBorrar = new QPushButton(DptoForm);
+        btnBorrar->setObjectName("btnBorrar");
+
+        verticalLayout->addWidget(btnBorrar);
+
+        btnEditar = new QPushButton(DptoForm);
+        btnEditar->setObjectName("btnEditar");
+
+        verticalLayout->addWidget(btnEditar);
+
+        btnAsignarUsr = new QPushButton(DptoForm);
+        btnAsignarUsr->setObjectName("btnAsignarUsr");
+
+        verticalLayout->addWidget(btnAsignarUsr);
+
+
+        retranslateUi(DptoForm);
+
+        QMetaObject::connectSlotsByName(DptoForm);
     } // setupUi
 
-    void retranslateUi(QWidget *dptoForm)
+    void retranslateUi(QWidget *DptoForm)
     {
-        dptoForm->setWindowTitle(QCoreApplication::translate("dptoForm", "Form", nullptr));
+        DptoForm->setWindowTitle(QCoreApplication::translate("DptoForm", "Departamento", nullptr));
+        btnCrear->setText(QCoreApplication::translate("DptoForm", "Crear", nullptr));
+        btnBorrar->setText(QCoreApplication::translate("DptoForm", "Borrar", nullptr));
+        btnEditar->setText(QCoreApplication::translate("DptoForm", "Editar", nullptr));
+        btnAsignarUsr->setText(QCoreApplication::translate("DptoForm", "Asignar", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class dptoForm: public Ui_dptoForm {};
+    class DptoForm: public Ui_DptoForm {};
 } // namespace Ui
 
 QT_END_NAMESPACE

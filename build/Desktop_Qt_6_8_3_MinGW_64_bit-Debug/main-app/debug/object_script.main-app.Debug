@@ -1,0 +1,15 @@
+debug/admicompany.o
+debug/dptoform.o
+debug/empresaform.o
+debug/mainadmi.o
+debug/userform.o
+debug/users.o
+debug/main.o
+debug/mainwindow.o
+debug/moc_admicompany.o
+debug/moc_dptoform.o
+debug/moc_empresaform.o
+debug/moc_mainadmi.o
+debug/moc_userform.o
+debug/moc_users.o
+debug/moc_mainwindow.o

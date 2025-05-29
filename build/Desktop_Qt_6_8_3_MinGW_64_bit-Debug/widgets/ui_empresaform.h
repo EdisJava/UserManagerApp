@@ -11,50 +11,74 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
-class Ui_empresaForm
+class Ui_EmpresaForm
 {
 public:
-    QWidget *centralwidget;
-    QMenuBar *menubar;
-    QStatusBar *statusbar;
+    QVBoxLayout *verticalLayout;
+    QPushButton *Crear;
+    QPushButton *Borrar;
+    QPushButton *Editar;
+    QPushButton *NuevoDept;
+    QListWidget *listWidget;
 
-    void setupUi(QMainWindow *empresaForm)
+    void setupUi(QWidget *EmpresaForm)
     {
-        if (empresaForm->objectName().isEmpty())
-            empresaForm->setObjectName("empresaForm");
-        empresaForm->resize(800, 600);
-        centralwidget = new QWidget(empresaForm);
-        centralwidget->setObjectName("centralwidget");
-        empresaForm->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(empresaForm);
-        menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 21));
-        empresaForm->setMenuBar(menubar);
-        statusbar = new QStatusBar(empresaForm);
-        statusbar->setObjectName("statusbar");
-        empresaForm->setStatusBar(statusbar);
+        if (EmpresaForm->objectName().isEmpty())
+            EmpresaForm->setObjectName("EmpresaForm");
+        EmpresaForm->resize(505, 559);
+        verticalLayout = new QVBoxLayout(EmpresaForm);
+        verticalLayout->setObjectName("verticalLayout");
+        Crear = new QPushButton(EmpresaForm);
+        Crear->setObjectName("Crear");
 
-        retranslateUi(empresaForm);
+        verticalLayout->addWidget(Crear);
 
-        QMetaObject::connectSlotsByName(empresaForm);
+        Borrar = new QPushButton(EmpresaForm);
+        Borrar->setObjectName("Borrar");
+
+        verticalLayout->addWidget(Borrar);
+
+        Editar = new QPushButton(EmpresaForm);
+        Editar->setObjectName("Editar");
+
+        verticalLayout->addWidget(Editar);
+
+        NuevoDept = new QPushButton(EmpresaForm);
+        NuevoDept->setObjectName("NuevoDept");
+
+        verticalLayout->addWidget(NuevoDept);
+
+        listWidget = new QListWidget(EmpresaForm);
+        listWidget->setObjectName("listWidget");
+
+        verticalLayout->addWidget(listWidget);
+
+
+        retranslateUi(EmpresaForm);
+
+        QMetaObject::connectSlotsByName(EmpresaForm);
     } // setupUi
 
-    void retranslateUi(QMainWindow *empresaForm)
+    void retranslateUi(QWidget *EmpresaForm)
     {
-        empresaForm->setWindowTitle(QCoreApplication::translate("empresaForm", "empresaForm", nullptr));
+        EmpresaForm->setWindowTitle(QCoreApplication::translate("EmpresaForm", "Empresa", nullptr));
+        Crear->setText(QCoreApplication::translate("EmpresaForm", "Crear", nullptr));
+        Borrar->setText(QCoreApplication::translate("EmpresaForm", "Borrar", nullptr));
+        Editar->setText(QCoreApplication::translate("EmpresaForm", "Editar", nullptr));
+        NuevoDept->setText(QCoreApplication::translate("EmpresaForm", "A\303\261adir departamento", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class empresaForm: public Ui_empresaForm {};
+    class EmpresaForm: public Ui_EmpresaForm {};
 } // namespace Ui
 
 QT_END_NAMESPACE

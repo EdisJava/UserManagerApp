@@ -11,8 +11,35 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Administrador General</string>
   </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,1">
+     <item>
+      <widget class="QPushButton" name="btnEmpresas">
+       <property name="text">
+        <string>Gestionar Empresas</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDepartamentos">
+       <property name="text">
+        <string>Gestionar Departamentos</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnUsuarios">
+       <property name="text">
+        <string>Gestionar Usuarios</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

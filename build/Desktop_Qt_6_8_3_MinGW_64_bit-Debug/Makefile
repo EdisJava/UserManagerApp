@@ -36,7 +36,6 @@ SED           = $(QMAKE) -install sed
 MOVE          = move
 SUBTARGETS    =  \
 		sub-Database \
-		sub-main-app \
 		sub-models \
 		sub-widgets
 
@@ -66,79 +65,54 @@ sub-Database-install_subtargets: FORCE
 sub-Database-uninstall_subtargets: FORCE
 	@if not exist Database\ mkdir Database\ & if not exist Database\ exit 1
 	cd Database\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\Database\Database.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
-sub-main-app-qmake_all:  FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
-	cd main-app\ && $(MAKE) -f Makefile qmake_all
-sub-main-app: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
-sub-main-app-make_first: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
-sub-main-app-all: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
-sub-main-app-clean: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
-sub-main-app-distclean: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
-sub-main-app-install_subtargets: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
-sub-main-app-uninstall_subtargets: FORCE
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
-sub-models-qmake_all:  FORCE
+sub-models-qmake_all: sub-Database-qmake_all FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 	cd models\ && $(MAKE) -f Makefile qmake_all
-sub-models: FORCE
+sub-models: sub-Database FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
-sub-models-make_first: FORCE
+sub-models-make_first: sub-Database-make_first FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
-sub-models-all: FORCE
+sub-models-all: sub-Database-all FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
-sub-models-clean: FORCE
+sub-models-clean: sub-Database-clean FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
-sub-models-distclean: FORCE
+sub-models-distclean: sub-Database-distclean FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
-sub-models-install_subtargets: FORCE
+sub-models-install_subtargets: sub-Database-install_subtargets FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
-sub-models-uninstall_subtargets: FORCE
+sub-models-uninstall_subtargets: sub-Database-uninstall_subtargets FORCE
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
-sub-widgets-qmake_all:  FORCE
+sub-widgets-qmake_all: sub-Database-qmake_all FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 	cd widgets\ && $(MAKE) -f Makefile qmake_all
-sub-widgets: FORCE
+sub-widgets: sub-Database FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile
-sub-widgets-make_first: FORCE
+sub-widgets-make_first: sub-Database-make_first FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile 
-sub-widgets-all: FORCE
+sub-widgets-all: sub-Database-all FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile all
-sub-widgets-clean: FORCE
+sub-widgets-clean: sub-Database-clean FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile clean
-sub-widgets-distclean: FORCE
+sub-widgets-distclean: sub-Database-distclean FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile distclean
-sub-widgets-install_subtargets: FORCE
+sub-widgets-install_subtargets: sub-Database-install_subtargets FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile install
-sub-widgets-uninstall_subtargets: FORCE
+sub-widgets-uninstall_subtargets: sub-Database-uninstall_subtargets FORCE
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile uninstall
 
@@ -467,6 +441,7 @@ Makefile: ../../UserMannagmentApp.pro ../../../../Qt/6.8.3/mingw_64/mkspecs/win3
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/qt_config.prf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/win32-g++/qmake.conf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/toolchain.prf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/default_pre.prf \
@@ -811,6 +786,7 @@ Makefile: ../../UserMannagmentApp.pro ../../../../Qt/6.8.3/mingw_64/mkspecs/win3
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/qt_config.prf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/win32-g++/qmake.conf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/spec_post.prf:
+.qmake.stash:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/exclusive_builds.prf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/toolchain.prf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/default_pre.prf:
@@ -832,72 +808,60 @@ Makefile: ../../UserMannagmentApp.pro ../../../../Qt/6.8.3/mingw_64/mkspecs/win3
 qmake: FORCE
 	@$(QMAKE) -o Makefile ..\..\UserMannagmentApp.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 
-qmake_all: sub-Database-qmake_all sub-main-app-qmake_all sub-models-qmake_all sub-widgets-qmake_all FORCE
+qmake_all: sub-Database-qmake_all sub-models-qmake_all sub-widgets-qmake_all FORCE
 
-make_first: sub-Database-make_first sub-main-app-make_first sub-models-make_first sub-widgets-make_first  FORCE
-all: sub-Database-all sub-main-app-all sub-models-all sub-widgets-all  FORCE
-clean: sub-Database-clean sub-main-app-clean sub-models-clean sub-widgets-clean  FORCE
-distclean: sub-Database-distclean sub-main-app-distclean sub-models-distclean sub-widgets-distclean  FORCE
+make_first: sub-Database-make_first sub-models-make_first sub-widgets-make_first  FORCE
+all: sub-Database-all sub-models-all sub-widgets-all  FORCE
+clean: sub-Database-clean sub-models-clean sub-widgets-clean  FORCE
+distclean: sub-Database-distclean sub-models-distclean sub-widgets-distclean  FORCE
 	-$(DEL_FILE) Makefile
 	-$(DEL_FILE) .qmake.stash
-install_subtargets: sub-Database-install_subtargets sub-main-app-install_subtargets sub-models-install_subtargets sub-widgets-install_subtargets FORCE
-uninstall_subtargets: sub-Database-uninstall_subtargets sub-main-app-uninstall_subtargets sub-models-uninstall_subtargets sub-widgets-uninstall_subtargets FORCE
+install_subtargets: sub-Database-install_subtargets sub-models-install_subtargets sub-widgets-install_subtargets FORCE
+uninstall_subtargets: sub-Database-uninstall_subtargets sub-models-uninstall_subtargets sub-widgets-uninstall_subtargets FORCE
 
 sub-Database-debug:
 	@if not exist Database\ mkdir Database\ & if not exist Database\ exit 1
 	cd Database\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\Database\Database.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
-sub-main-app-debug:
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
-sub-models-debug:
+sub-models-debug: sub-Database-debug
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
-sub-widgets-debug:
+sub-widgets-debug: sub-Database-debug
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile debug
-debug: sub-Database-debug sub-main-app-debug sub-models-debug sub-widgets-debug
+debug: sub-Database-debug sub-models-debug sub-widgets-debug
 
 sub-Database-release:
 	@if not exist Database\ mkdir Database\ & if not exist Database\ exit 1
 	cd Database\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\Database\Database.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
-sub-main-app-release:
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
-sub-models-release:
+sub-models-release: sub-Database-release
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
-sub-widgets-release:
+sub-widgets-release: sub-Database-release
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile release
-release: sub-Database-release sub-main-app-release sub-models-release sub-widgets-release
+release: sub-Database-release sub-models-release sub-widgets-release
 
 sub-Database-check:
 	@if not exist Database\ mkdir Database\ & if not exist Database\ exit 1
 	cd Database\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\Database\Database.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
-sub-main-app-check:
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
-sub-models-check:
+sub-models-check: sub-Database-check
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
-sub-widgets-check:
+sub-widgets-check: sub-Database-check
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile check
-check: sub-Database-check sub-main-app-check sub-models-check sub-widgets-check
+check: sub-Database-check sub-models-check sub-widgets-check
 
 sub-Database-benchmark:
 	@if not exist Database\ mkdir Database\ & if not exist Database\ exit 1
 	cd Database\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\Database\Database.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
-sub-main-app-benchmark:
-	@if not exist main-app\ mkdir main-app\ & if not exist main-app\ exit 1
-	cd main-app\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\main-app\main-app.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
-sub-models-benchmark:
+sub-models-benchmark: sub-Database-benchmark
 	@if not exist models\ mkdir models\ & if not exist models\ exit 1
 	cd models\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\models\models.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
-sub-widgets-benchmark:
+sub-widgets-benchmark: sub-Database-benchmark
 	@if not exist widgets\ mkdir widgets\ & if not exist widgets\ exit 1
 	cd widgets\ && ( if not exist Makefile $(QMAKE) -o Makefile C:\projectsqt\UserMannagmentApp\widgets\widgets.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug" ) && $(MAKE) -f Makefile benchmark
-benchmark: sub-Database-benchmark sub-main-app-benchmark sub-models-benchmark sub-widgets-benchmark
+benchmark: sub-Database-benchmark sub-models-benchmark sub-widgets-benchmark
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE
