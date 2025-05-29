@@ -28,7 +28,7 @@ private:
 
     QWidget *empresaForm = nullptr;
     QWidget *dptoForm = nullptr;
-    Users *usersWidget = nullptr; // Instancia de la clase que muestra la lista
+    Users *usersWidget = nullptr; // estp instancia de la clase que muestra la lista
 };
 
 #endif // MAINADMI_H

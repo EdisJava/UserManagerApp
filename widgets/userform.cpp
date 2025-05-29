@@ -20,9 +20,6 @@ UserForm::~UserForm()
     delete ui;
 }
 
-
-
-
 void UserForm::setDatosUsuario(const QString &dni,
                                const QString &nombre,
                                const QString &telefono,
@@ -86,7 +83,7 @@ void UserForm::on_btnGuardar_clicked()
     QSqlQuery query;
 
     if (modoEdicion) {
-        // UPDATE
+        // update
         query.prepare(R"(
             UPDATE usuarios SET
                 nombre = :nombre,
@@ -102,7 +99,7 @@ void UserForm::on_btnGuardar_clicked()
 
         query.bindValue(":dni", dniOriginal);  // Clave original
     } else {
-        // INSERT
+        // insert
         if (existeUsuario(dni)) {
             QMessageBox::warning(this, "Error", "Ya existe un usuario con ese DNI.");
             return;
@@ -138,6 +135,7 @@ void UserForm::on_btnGuardar_clicked()
 
 void UserForm::on_btnExaminar_clicked()
 {
+    //elegir la imagen que se desea subir
     QString archivo = QFileDialog::getOpenFileName(this,
                                                    tr("Seleccionar imagen"),
                                                    QString(),

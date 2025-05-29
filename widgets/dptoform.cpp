@@ -23,6 +23,7 @@ DptoForm::~DptoForm()
     delete ui;
 }
 
+// Carga los nombres de departamentos desde la base de datos y los muestra en la lista
 void DptoForm::cargarDepartamentos()
 {
     ui->listWidget->clear();
@@ -33,6 +34,7 @@ void DptoForm::cargarDepartamentos()
         return;
     }
 
+    // Agrega cada departamento recuperado a la lista
     while (query.next()) {
         QString nombre = query.value(0).toString();
         ui->listWidget->addItem(nombre);
@@ -40,6 +42,7 @@ void DptoForm::cargarDepartamentos()
 }
 
 
+// Guarda los nombres de los departamentos actuales en un archivo de texto
 void DptoForm::guardarDepartamentos()
 {
     QFile file("departamentos.txt");
@@ -60,6 +63,8 @@ void DptoForm::on_btnCrear_clicked()
     QString nombre = QInputDialog::getText(this, tr("Crear Departamento"),
                                            tr("Nombre del departamento:"), QLineEdit::Normal,
                                            "", &ok);
+
+    //verifica si ya ha sido creado el departamento
     if (ok && !nombre.isEmpty()) {
         // Verificar si ya existe
         QSqlQuery checkQuery;
@@ -111,11 +116,14 @@ void DptoForm::on_btnEditar_clicked()
         return;
     }
 
+
+    // Pide al usuario un nuevo nombre para el departamento
     bool ok;
     QString nuevoNombre = QInputDialog::getText(this, tr("Editar Departamento"),
                                                 tr("Nuevo nombre:"), QLineEdit::Normal,
                                                 item->text(), &ok);
     if (ok && !nuevoNombre.isEmpty()) {
+         // Verifica que no se repita el nombre
         for (int i = 0; i < ui->listWidget->count(); ++i) {
             QListWidgetItem *otro = ui->listWidget->item(i);
             if (otro != item && otro->text().compare(nuevoNombre, Qt::CaseInsensitive) == 0) {
@@ -136,6 +144,6 @@ void DptoForm::on_btnAsignarUsr_clicked()
     }
 
     QMessageBox::information(this, "Asignar Usuario", "Aquí abrirías la ventana para asignar usuarios al departamento: " + item->text());
-    // Aquí podrías abrir tu ventana `Asignar`
+    // Aquí puedes abrir tu ventana 'Asignar'
 }
 

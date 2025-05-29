@@ -11,7 +11,7 @@ Users::Users(QWidget *parent) :
     ui(new Ui::Users)
 {
     ui->setupUi(this);
-    // Inicialmente sin usuario logueado
+    // Inicialmente sin el usuario logueado
     usuarioActualDni.clear();
     usuarioActualRol.clear();
     usuarioActualEmpresa.clear();
@@ -37,7 +37,7 @@ void Users::setUsuarioActual(const QString &dni, const QString &rol, const QStri
     if (usuarioActualRol == "admin_empresa") {
         setEmpresaFiltro(usuarioActualEmpresa);
     } else {
-        setEmpresaFiltro(QString()); // Sin filtro
+        setEmpresaFiltro(QString()); // Sin filtrar
     }
 }
 
@@ -142,8 +142,7 @@ void Users::on_btnDeleteUser_clicked()
     QString texto = currentItem->text();
     QString dni = texto.split(" - ").at(0);
 
-    if (QMessageBox::question(this, "Confirmar eliminación",
-                              "¿Seguro que quieres eliminar al usuario '" + texto + "'?") == QMessageBox::Yes) {
+    if (QMessageBox::question(this, "Confirmar eliminación", "¿Seguro que quieres eliminar al usuario '" + texto + "'?") == QMessageBox::Yes) {
 
         QSqlQuery query;
         query.prepare("DELETE FROM usuarios WHERE dni = :dni");
@@ -199,10 +198,4 @@ void Users::setEmpresaFiltro(const QString &empresa)
 {
     this->empresaFiltro = empresa;
     loadUsers();
-}
-
-void Users::cargarUsuarios()
-{
-    // Esto parece duplicado, lo reemplaza loadUsers con filtro.
-    // Puedes eliminar esta función si no la usas.
 }

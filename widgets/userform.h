@@ -45,8 +45,8 @@ private:
 
 private:
     Ui::UserForm *ui;
-    bool modoEdicion;          // ✅ aquí sí
-    QString dniOriginal;       // ✅ aquí sí
+    bool modoEdicion;
+    QString dniOriginal;
 
     bool existeUsuario(const QString &dni);
 };

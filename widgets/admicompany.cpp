@@ -13,17 +13,14 @@ admicompany::admicompany(const QString& empresa, QWidget *parent) :
     empresaAdmin(empresa)
 
 {
-
-
-    ui->setupUi(this);
-
-    loadUsers();
+    ui->setupUi(this);  // Configura la interfaz de usuario
+    loadUsers();        // Carga los usuarios de la empresa
      qDebug() << "Empresa del admin:" << empresaAdmin;
 }
 
 admicompany::~admicompany()
 {
-    delete ui;
+    delete ui;  // Libera la memoria asociada a la interfaz
 }
 
 void admicompany::loadUsers()
@@ -39,6 +36,7 @@ void admicompany::loadUsers()
         return;
     }
 
+    // Agrega cada usuario encontrado a la lista
     while (query.next()) {
         QString itemText = query.value(0).toString() + " - " + query.value(1).toString();
         ui->listWidget->addItem(itemText);
@@ -99,6 +97,7 @@ void admicompany::on_btnEditar_clicked()
     }
 
     UserForm form(this);
+     // se asignan unos valores a los parámetros de la consulta
     form.setDatosUsuario(
         query.value(0).toString(),
         query.value(1).toString(),
@@ -152,6 +151,7 @@ void admicompany::on_btnBorrar_clicked()
     QString texto = currentItem->text();
     QString dni = texto.split(" - ").value(0);
 
+    //para confirmar la eliminacion del usuario
     if (QMessageBox::question(this, "Confirmar eliminación",
                               "¿Seguro que quieres eliminar al usuario '" + texto + "'?") == QMessageBox::Yes) {
         QSqlQuery query;

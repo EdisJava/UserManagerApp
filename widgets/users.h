@@ -34,7 +34,7 @@ private:
     QString usuarioActualRol;
     QString usuarioActualEmpresa;
 
-    // Para filtrar usuarios que puede ver (admins de empresa solo ven los suyos)
+    // Para filtrar usuarios que puede ver (los admins de empresa solo pueden ver los suyos)
     QString empresaFiltro;
 
     void cargarUsuarios();

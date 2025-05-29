@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     // Ruta a la base de datos (usa barras normales o dobles invertidas)
-    QString dbPath = "C:/projectsqt/UserMannagmentApp/UserMannagmentApp.db";
+    QString dbPath = "C:/Users/AEPRACINFO4/Documents/UserMannagmentApp/UserMannagmentApp.db";
 
     // Crear conexión única a base de datos
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
