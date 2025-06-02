@@ -102,9 +102,22 @@ void DptoForm::on_btnBorrar_clicked()
         return;
     }
 
+    QString nombre = item->text();
+
     if (QMessageBox::question(this, "Borrar",
-                              "¿Estás seguro de borrar el departamento '" + item->text() + "'?") == QMessageBox::Yes) {
+                              "¿Estás seguro de borrar el departamento '" + nombre + "'?") == QMessageBox::Yes) {
+
+        QSqlQuery query;
+        query.prepare("DELETE FROM departamentos WHERE nombre = :nombre");
+        query.bindValue(":nombre", nombre);
+
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", "No se pudo borrar el departamento de la base de datos:\n" + query.lastError().text());
+            return;
+        }
+
         delete item;
+        QMessageBox::information(this, "Eliminado", "Departamento borrado correctamente.");
     }
 }
 
@@ -116,14 +129,14 @@ void DptoForm::on_btnEditar_clicked()
         return;
     }
 
+    QString nombreActual = item->text();
 
-    // Pide al usuario un nuevo nombre para el departamento
     bool ok;
     QString nuevoNombre = QInputDialog::getText(this, tr("Editar Departamento"),
                                                 tr("Nuevo nombre:"), QLineEdit::Normal,
-                                                item->text(), &ok);
+                                                nombreActual, &ok);
     if (ok && !nuevoNombre.isEmpty()) {
-         // Verifica que no se repita el nombre
+        // Verifica que no se repita el nombre
         for (int i = 0; i < ui->listWidget->count(); ++i) {
             QListWidgetItem *otro = ui->listWidget->item(i);
             if (otro != item && otro->text().compare(nuevoNombre, Qt::CaseInsensitive) == 0) {
@@ -131,9 +144,22 @@ void DptoForm::on_btnEditar_clicked()
                 return;
             }
         }
+
+        QSqlQuery query;
+        query.prepare("UPDATE departamentos SET nombre = :nuevoNombre WHERE nombre = :nombreActual");
+        query.bindValue(":nuevoNombre", nuevoNombre);
+        query.bindValue(":nombreActual", nombreActual);
+
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", "No se pudo actualizar el departamento en la base de datos:\n" + query.lastError().text());
+            return;
+        }
+
         item->setText(nuevoNombre);
+        QMessageBox::information(this, "Editado", "Departamento renombrado correctamente.");
     }
 }
+
 
 void DptoForm::on_btnAsignarUsr_clicked()
 {

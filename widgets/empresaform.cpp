@@ -116,11 +116,22 @@ void EmpresaForm::onBorrarClicked()
 
     if (QMessageBox::question(this, "Confirmar borrado",
                               "¿Seguro que quieres borrar la empresa '" + nombre + "'?") == QMessageBox::Yes) {
+
+        QSqlQuery query;
+        query.prepare("DELETE FROM empresas WHERE nombre = :nombre");
+        query.bindValue(":nombre", nombre);
+
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", "No se pudo borrar la empresa de la base de datos:\n" + query.lastError().text());
+            return;
+        }
+
         delete item;
         guardarLista();
         QMessageBox::information(this, "Empresa borrada", "Empresa '" + nombre + "' borrada correctamente.");
     }
 }
+
 
 void EmpresaForm::onEditarClicked()
 {
@@ -136,12 +147,23 @@ void EmpresaForm::onEditarClicked()
                                                 tr("Nuevo nombre:"), QLineEdit::Normal,
                                                 nombreActual, &ok);
     if (ok && !nombreNuevo.isEmpty()) {
+        // Verificar duplicado en la lista
         for (int i = 0; i < ui->listWidget->count(); ++i) {
             QListWidgetItem *otherItem = ui->listWidget->item(i);
             if (otherItem != item && otherItem->text().compare(nombreNuevo, Qt::CaseInsensitive) == 0) {
                 QMessageBox::warning(this, "Nombre duplicado", "Ya existe una empresa con ese nombre.");
                 return;
             }
+        }
+
+        QSqlQuery query;
+        query.prepare("UPDATE empresas SET nombre = :nuevoNombre WHERE nombre = :nombreActual");
+        query.bindValue(":nuevoNombre", nombreNuevo);
+        query.bindValue(":nombreActual", nombreActual);
+
+        if (!query.exec()) {
+            QMessageBox::critical(this, "Error", "No se pudo editar la empresa en la base de datos:\n" + query.lastError().text());
+            return;
         }
 
         item->setText(nombreNuevo);
