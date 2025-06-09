@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>370</height>
+    <width>475</width>
+    <height>506</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Formulario Usuario</string>
+   <string>Gestión de Usuario</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="txtDni"/>
+      <widget class="QLineEdit" name="lineEditDni"/>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="labelNombre">
@@ -34,7 +34,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="txtNombre"/>
+      <widget class="QLineEdit" name="lineEditNombre"/>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="labelTelefono">
@@ -44,7 +44,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="txtTelefono"/>
+      <widget class="QLineEdit" name="lineEditTelefono"/>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="labelEmail">
@@ -54,7 +54,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLineEdit" name="txtEmail"/>
+      <widget class="QLineEdit" name="lineEditEmail"/>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="labelDepartamento">
@@ -86,57 +86,63 @@
      <item row="6" column="1">
       <widget class="QComboBox" name="comboBoxEstado"/>
      </item>
-     <item row="7" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayoutImagen">
-       <item>
-        <widget class="QLineEdit" name="txtImagen"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnExaminar">
-         <property name="text">
-          <string>Examinar</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="labelImagen">
-       <property name="text">
-        <string>Imagen:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QComboBox" name="comboBoxRol">
-       <item>
-        <property name="text">
-         <string>AdminTotal</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>AdminEmpresa</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Usuario</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="8" column="0">
       <widget class="QLabel" name="labelRol">
        <property name="text">
         <string>Rol:</string>
        </property>
       </widget>
      </item>
+     <item row="7" column="1">
+      <widget class="QComboBox" name="comboBoxRol"/>
+     </item>
+     <item row="8" column="0">
+      <widget class="QLabel" name="labelFoto">
+       <property name="text">
+        <string>Foto (ruta):</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLineEdit" name="lineEditFoto"/>
+     </item>
+     <item row="9" column="1">
+      <widget class="QPushButton" name="btnSeleccionarFoto">
+       <property name="text">
+        <string>Seleccionar Foto</string>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLabel" name="labelFotoRuta">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayoutButtons">
+    <widget class="QLabel" name="labelPreviewImage">
+     <property name="minimumSize">
+      <size>
+       <width>200</width>
+       <height>150</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::Box</enum>
+     </property>
+     <property name="text">
+      <string>Previsualización</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttonLayout">
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -155,9 +161,6 @@
        <property name="text">
         <string>Guardar</string>
        </property>
-       <property name="default">
-        <bool>true</bool>
-       </property>
       </widget>
      </item>
      <item>
@@ -174,4 +177,3 @@
  <resources/>
  <connections/>
 </ui>
-

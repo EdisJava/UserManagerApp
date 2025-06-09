@@ -441,7 +441,6 @@ Makefile: ../../UserMannagmentApp.pro ../../../../Qt/6.8.3/mingw_64/mkspecs/win3
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/qt_config.prf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/win32-g++/qmake.conf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/exclusive_builds.prf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/toolchain.prf \
 		../../../../Qt/6.8.3/mingw_64/mkspecs/features/default_pre.prf \
@@ -786,7 +785,6 @@ Makefile: ../../UserMannagmentApp.pro ../../../../Qt/6.8.3/mingw_64/mkspecs/win3
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/qt_config.prf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/win32-g++/qmake.conf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/spec_post.prf:
-.qmake.stash:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/exclusive_builds.prf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/toolchain.prf:
 ../../../../Qt/6.8.3/mingw_64/mkspecs/features/default_pre.prf:

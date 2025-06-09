@@ -1,10 +1,13 @@
-
 #ifndef MAINADMI_H
 #define MAINADMI_H
 
 #include <QWidget>
 
-class Users;
+// Incluye los headers de los formularios que usarás (asegúrate que existen)
+#include "UserForm.h"
+#include "empresaForm.h"
+#include "DptoForm.h"
+#include "users.h"
 
 namespace Ui {
 class MainAdmi;
@@ -18,17 +21,25 @@ public:
     explicit MainAdmi(QWidget *parent = nullptr);
     ~MainAdmi();
 
+signals:
+    void btnGestionUsuariosClicked();
+    void btnGestionEmpresasClicked();
+    void btnGestionDepartamentosClicked();
+
 private slots:
-    void on_btnEmpresas_clicked();
-    void on_btnDepartamentos_clicked();
-    void on_btnUsuarios_clicked();
+    void abrirGestionUsuarios();
+    void abrirGestionEmpresas();
+    void abrirGestionDepartamentos();
 
 private:
     Ui::MainAdmi *ui;
 
-    QWidget *empresaForm = nullptr;
-    QWidget *dptoForm = nullptr;
-    Users *usersWidget = nullptr; // Instancia de la clase que muestra la lista
+    // Punteros a los formularios hijos
+    Users *users;
+    EmpresaForm *empresaForm;
+    DptoForm *dptoForm;
+      DepartamentoDAO departamentoDAO;
+    QWidget *widgetActual = nullptr;
 };
 
 #endif // MAINADMI_H

@@ -8,10 +8,16 @@ DEFINES += DATABASE_LIBRARY
 CONFIG += c++17
 
 HEADERS += \
-    database.h
+    database.h \
+    departamentoDAO.h \
+    empresaDAO.h \
+    usuarioDAO.h
 
 SOURCES += \
-    database.cpp
+    database.cpp \
+    departamentoDAO.cpp \
+    empresaDAO.cpp \
+    usuarioDAO.cpp
 
 INCLUDEPATH += $$PWD  # ¡IMPORTANTE! Para que otros subproyectos encuentren database.h
 

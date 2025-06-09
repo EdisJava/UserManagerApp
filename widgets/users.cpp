@@ -1,208 +1,183 @@
 #include "users.h"
 #include "ui_users.h"
-#include "userform.h"
+#include "UserForm.h"
+
 #include <QMessageBox>
-#include <QSqlQuery>
-#include <QSqlError>
+#include <QStandardItemModel>
 #include <QDebug>
 
 Users::Users(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Users)
+    ui(new Ui::Users),
+    model(new QStandardItemModel(this)),
+    dao(),  // Instancia de UsuarioDAO
+    userForm(nullptr)  // Inicializar puntero userForm
 {
     ui->setupUi(this);
-    // Inicialmente sin usuario logueado
-    usuarioActualDni.clear();
-    usuarioActualRol.clear();
-    usuarioActualEmpresa.clear();
+    ui->listView->setModel(model);
 
-    loadUsers();
+    // Configurar label de foto
+    ui->labelFoto->setAlignment(Qt::AlignCenter);
+    ui->labelFoto->setText("Sin foto");
+    ui->labelFoto->setMinimumSize(150, 150);
 
-    connect(ui->listWidget, &QListWidget::currentItemChanged,
-            this, &Users::mostrarFotoUsuario);
+    // Cargar usuarios desde la BD al abrir
+    cargarUsuarios();
+
+    // Conectar clic sobre lista para mostrar datos
+    connect(ui->listView, &QListView::clicked, this, &Users::on_listView_clicked);
 }
 
 Users::~Users()
 {
+    delete userForm; // Liberar memoria si fue creado
     delete ui;
-}
-
-void Users::setUsuarioActual(const QString &dni, const QString &rol, const QString &empresa)
-{
-    usuarioActualDni = dni;
-    usuarioActualRol = rol;
-    usuarioActualEmpresa = empresa;
-
-    // Si es admin de empresa, filtra por la empresa del usuario
-    if (usuarioActualRol == "admin_empresa") {
-        setEmpresaFiltro(usuarioActualEmpresa);
-    } else {
-        setEmpresaFiltro(QString()); // Sin filtro
-    }
-}
-
-void Users::loadUsers()
-{
-    ui->listWidget->clear();
-
-    QSqlQuery query;
-    if (empresaFiltro.isEmpty()) {
-        query.prepare("SELECT dni, nombre FROM usuarios ORDER BY nombre ASC");
-    } else {
-        query.prepare("SELECT dni, nombre FROM usuarios WHERE empresa = :empresa ORDER BY nombre ASC");
-        query.bindValue(":empresa", empresaFiltro);
-    }
-
-    if (!query.exec()) {
-        QMessageBox::warning(this, "Error", "Error al cargar usuarios: " + query.lastError().text());
-        return;
-    }
-
-    while (query.next()) {
-        QString itemText = query.value(0).toString() + " - " + query.value(1).toString();
-        ui->listWidget->addItem(itemText);
-    }
-
-    query.finish();
-}
-
-void Users::on_btnNuevoUsuario_clicked()
-{
-    UserForm *form = new UserForm(this);
-
-    // Pasar modo admin_empresa si aplica
-    form->setModoAdminEmpresa(usuarioActualRol == "admin_empresa");
-
-    connect(form, &UserForm::usuarioGuardado, this, &Users::loadUsers);
-    form->setAttribute(Qt::WA_DeleteOnClose);
-    form->exec();
-}
-
-void Users::on_btnAddUser_clicked()
-{
-    UserForm *form = new UserForm(this);
-
-    form->setModoAdminEmpresa(usuarioActualRol == "admin_empresa");
-
-    connect(form, &UserForm::usuarioGuardado, this, &Users::loadUsers);
-    form->setAttribute(Qt::WA_DeleteOnClose);
-    form->exec();
-}
-
-void Users::on_btnEditUser_clicked()
-{
-    auto currentItem = ui->listWidget->currentItem();
-    if (!currentItem) {
-        QMessageBox::warning(this, "Editar usuario", "Selecciona un usuario para editar.");
-        return;
-    }
-
-    QString dni = currentItem->text().split(" - ").at(0);
-
-    QSqlQuery query;
-    query.prepare("SELECT dni, nombre, telefono, email, departamento, empresa, estado, foto, rol FROM usuarios WHERE dni = :dni");
-    query.bindValue(":dni", dni);
-
-    if (!query.exec() || !query.next()) {
-        QMessageBox::warning(this, "Error", "No se encontró información del usuario.");
-        return;
-    }
-
-    UserForm *form = new UserForm(this);
-
-    form->setDatosUsuario(
-        query.value(0).toString(),  // dni
-        query.value(1).toString(),  // nombre
-        query.value(2).toString(),  // telefono
-        query.value(3).toString(),  // email
-        query.value(4).toString(),  // departamento
-        query.value(5).toString(),  // empresa
-        query.value(6).toString(),  // estado
-        query.value(7).toString(),  // foto
-        query.value(8).toString()   // rol
-        );
-
-    // Indicar si está en modo admin_empresa para desactivar cambio empresa
-    form->setModoAdminEmpresa(usuarioActualRol == "admin_empresa");
-
-    connect(form, &UserForm::usuarioGuardado, this, &Users::loadUsers);
-
-    form->setAttribute(Qt::WA_DeleteOnClose);
-    form->exec();
-}
-
-void Users::on_btnDeleteUser_clicked()
-{
-    auto currentItem = ui->listWidget->currentItem();
-    if (!currentItem) {
-        QMessageBox::warning(this, "Eliminar usuario", "Selecciona un usuario para eliminar.");
-        return;
-    }
-
-    QString texto = currentItem->text();
-    QString dni = texto.split(" - ").at(0);
-
-    if (QMessageBox::question(this, "Confirmar eliminación",
-                              "¿Seguro que quieres eliminar al usuario '" + texto + "'?") == QMessageBox::Yes) {
-
-        QSqlQuery query;
-        query.prepare("DELETE FROM usuarios WHERE dni = :dni");
-        query.bindValue(":dni", dni);
-
-        if (!query.exec()) {
-            QMessageBox::warning(this, "Error", "No se pudo eliminar el usuario: " + query.lastError().text());
-            return;
-        }
-
-        query.finish();
-        loadUsers();
-    }
-}
-
-void Users::mostrarFotoUsuario(QListWidgetItem *current, QListWidgetItem *previous)
-{
-    Q_UNUSED(previous);
-
-    if (!current) {
-        ui->labelFoto->clear();
-        return;
-    }
-
-    QString dni = current->text().split(" - ").at(0);
-
-    QSqlQuery query;
-    query.prepare("SELECT foto FROM usuarios WHERE dni = :dni");
-    query.bindValue(":dni", dni);
-
-    if (!query.exec() || !query.next()) {
-        ui->labelFoto->clear();
-        return;
-    }
-
-    QString rutaFoto = query.value(0).toString();
-
-    if (rutaFoto.isEmpty()) {
-        ui->labelFoto->clear();
-        return;
-    }
-
-    QPixmap pixmap(rutaFoto);
-    if (pixmap.isNull()) {
-        ui->labelFoto->setText("Imagen no válida");
-        return;
-    }
-
-    ui->labelFoto->setPixmap(pixmap.scaled(ui->labelFoto->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-}
-
-void Users::setEmpresaFiltro(const QString &empresa)
-{
-    this->empresaFiltro = empresa;
-    loadUsers();
 }
 
 void Users::cargarUsuarios()
 {
-    // Esto parece duplicado, lo reemplaza loadUsers con filtro.
-    // Puedes eliminar esta función si no la usas.
+    QString errorMsg;
+    listaUsuarios = dao.listarUsuarios("", errorMsg);  // Carga todos sin filtro
+
+    if (!errorMsg.isEmpty()) {
+        QMessageBox::critical(this, tr("Error al cargar usuarios"), errorMsg);
+        return;
+    }
+
+    model->clear();
+    for (const QVariantMap &usuario : listaUsuarios) {
+        QString nombre = usuario.value("nombre").toString();
+        QStandardItem *item = new QStandardItem(nombre);
+        model->appendRow(item);
+    }
+
+    ui->listView->setModel(model);
+
+    if (!listaUsuarios.isEmpty()) {
+        QModelIndex firstIndex = model->index(0, 0);
+        ui->listView->setCurrentIndex(firstIndex);
+        on_listView_clicked(firstIndex);
+    } else {
+        ui->labelFoto->clear();
+        ui->labelFoto->setText("Sin foto");
+    }
+}
+
+void Users::on_btnAddUser_clicked()
+{
+    UserForm form(&dao, this); // Crear formulario modal
+
+    if (form.exec() == QDialog::Accepted) {
+        QVariantMap nuevoUsuario = form.getUserData();
+
+        QString errorMsg;
+        if (!dao.insertarUsuario(nuevoUsuario, errorMsg)) {
+            QMessageBox::critical(this, tr("Error al insertar usuario"), errorMsg);
+        } else {
+            cargarUsuarios();
+        }
+    }
+}
+
+void Users::on_btnEditUser_clicked()
+{
+    QModelIndex index = ui->listView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QVariantMap usuario = listaUsuarios.at(index.row());
+
+    UserForm form(&dao, this);
+    form.setUserData(usuario);
+
+    if (form.exec() == QDialog::Accepted) {
+        QVariantMap usuarioActualizado = form.getUserData();
+
+        QString errorMsg;
+        if (!dao.actualizarUsuario(usuarioActualizado, errorMsg)) {
+            QMessageBox::critical(this, tr("Error al actualizar usuario"), errorMsg);
+        } else {
+            cargarUsuarios();
+        }
+    }
+}
+
+void Users::on_btnDeleteUser_clicked()
+{
+    QModelIndex index = ui->listView->currentIndex();
+    if (!index.isValid())
+        return;
+
+    QVariantMap usuario = listaUsuarios.at(index.row());
+
+    if (usuario.value("nombre").toString().toLower() == "admin") {
+        QMessageBox::warning(this, tr("Aviso"), tr("No se puede eliminar el usuario admin."));
+        return;
+    }
+
+    QString errorMsg;
+    if (!dao.eliminarUsuario(usuario.value("dni").toString(), errorMsg)) {
+        QMessageBox::critical(this, tr("Error al eliminar usuario"), errorMsg);
+    } else {
+        cargarUsuarios();
+    }
+}
+
+void Users::on_listView_clicked(const QModelIndex &index)
+{
+    if (!index.isValid())
+        return;
+
+    QVariantMap usuario = listaUsuarios.at(index.row());
+
+    QString rutaFoto = usuario.value("foto").toString().trimmed();
+
+    if (!rutaFoto.isEmpty()) {
+        QPixmap pixmap(rutaFoto);
+
+        if (!pixmap.isNull()) {
+            ui->labelFoto->setPixmap(pixmap.scaled(ui->labelFoto->size(),
+                                                   Qt::KeepAspectRatio,
+                                                   Qt::SmoothTransformation));
+            ui->labelFoto->setText("");
+        } else {
+            qDebug() << "No se pudo cargar la imagen desde esa ruta:" << rutaFoto;
+            ui->labelFoto->setText("Foto no válida");
+            ui->labelFoto->setPixmap(QPixmap());
+        }
+    } else {
+        ui->labelFoto->setText("Sin foto");
+        ui->labelFoto->setPixmap(QPixmap());
+    }
+}
+
+void Users::abrirUserFormConDatos(const QVariantMap &datos)
+{
+    // Si userForm no está creado, crear la instancia una vez
+    if (!userForm)
+        //userForm = new UserForm(&dao, this);
+
+    // Cargar datos en el formulario
+    userForm->setUserData(datos);
+
+    // Mostrar formulario como ventana independiente no modal (puedes cambiar exec() si quieres modal)
+    userForm->show();
+    userForm->raise();
+    userForm->activateWindow();
+}
+
+void Users::on_btnAgregarUsuario_clicked()
+{
+    if (!userForm)
+        userForm = new UserForm(&dao, this);  // ← ahora pasamos &dao y this
+
+    userForm->show();
+    userForm->raise();
+    userForm->activateWindow();
+}
+
+void Users::setEmpresaFiltro(const QString &empresa)
+{
+    empresaFiltro = empresa;
+    cargarUsuarios();  // Asegúrate de que esta función recargue la lista con el filtro aplicado
 }

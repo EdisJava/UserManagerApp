@@ -2,6 +2,7 @@
 #define GUESS_H
 
 #include <QWidget>
+#include <QPixmap>
 
 namespace Ui {
 class Guess;
@@ -14,23 +15,16 @@ class Guess : public QWidget
 public:
     explicit Guess(QWidget *parent = nullptr);
     ~Guess();
-    void cargarDatosUsuario(const QString &nombre);
 
-
-    void setDatosUsuario(const QString &dni,
-                         const QString &nombre,
-                         const QString &telefono,
-                         const QString &email,
-                         const QString &departamento,
-                         const QString &empresa,
-                         const QString &estado,
-                         const QString &foto,
-                         const QString &rol);
-
-signals:
- // para abrir UserForm desde MainWindow u otro
-
-private slots:
+    void mostrarDatos(const QString &dni,
+                      const QString &nombre,
+                      const QString &telefono,
+                      const QString &email,
+                      const QString &departamento,
+                      const QString &empresa,
+                      const QString &estado,
+                      const QString &rol,
+                      const QPixmap &foto);
 
 private:
     Ui::Guess *ui;

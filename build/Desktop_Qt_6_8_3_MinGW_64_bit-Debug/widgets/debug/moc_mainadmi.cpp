@@ -38,10 +38,12 @@ struct qt_meta_tag_ZN8MainAdmiE_t {};
 #ifdef QT_MOC_HAS_STRINGDATA
 static constexpr auto qt_meta_stringdata_ZN8MainAdmiE = QtMocHelpers::stringData(
     "MainAdmi",
-    "on_btnEmpresas_clicked",
+    "on_actionCerrar_sesion_triggered",
     "",
-    "on_btnDepartamentos_clicked",
-    "on_btnUsuarios_clicked"
+    "on_actionSalir_triggered",
+    "on_btnGestionUsuarios_clicked",
+    "on_btnGestionEmpresas_clicked",
+    "on_btnGestionDepartamentos_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -53,7 +55,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN8MainAdmiE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -61,11 +63,15 @@ Q_CONSTINIT static const uint qt_meta_data_ZN8MainAdmiE[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   32,    2, 0x08,    1 /* Private */,
-       3,    0,   33,    2, 0x08,    2 /* Private */,
-       4,    0,   34,    2, 0x08,    3 /* Private */,
+       1,    0,   44,    2, 0x08,    1 /* Private */,
+       3,    0,   45,    2, 0x08,    2 /* Private */,
+       4,    0,   46,    2, 0x08,    3 /* Private */,
+       5,    0,   47,    2, 0x08,    4 /* Private */,
+       6,    0,   48,    2, 0x08,    5 /* Private */,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -74,7 +80,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN8MainAdmiE[] = {
 };
 
 Q_CONSTINIT const QMetaObject MainAdmi::staticMetaObject = { {
-    QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
+    QMetaObject::SuperData::link<QMainWindow::staticMetaObject>(),
     qt_meta_stringdata_ZN8MainAdmiE.offsetsAndSizes,
     qt_meta_data_ZN8MainAdmiE,
     qt_static_metacall,
@@ -82,11 +88,15 @@ Q_CONSTINIT const QMetaObject MainAdmi::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_tag_ZN8MainAdmiE_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<MainAdmi, std::true_type>,
-        // method 'on_btnEmpresas_clicked'
+        // method 'on_actionCerrar_sesion_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_btnDepartamentos_clicked'
+        // method 'on_actionSalir_triggered'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_btnUsuarios_clicked'
+        // method 'on_btnGestionUsuarios_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnGestionEmpresas_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnGestionDepartamentos_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -97,9 +107,11 @@ void MainAdmi::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
     auto *_t = static_cast<MainAdmi *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->on_btnEmpresas_clicked(); break;
-        case 1: _t->on_btnDepartamentos_clicked(); break;
-        case 2: _t->on_btnUsuarios_clicked(); break;
+        case 0: _t->on_actionCerrar_sesion_triggered(); break;
+        case 1: _t->on_actionSalir_triggered(); break;
+        case 2: _t->on_btnGestionUsuarios_clicked(); break;
+        case 3: _t->on_btnGestionEmpresas_clicked(); break;
+        case 4: _t->on_btnGestionDepartamentos_clicked(); break;
         default: ;
         }
     }
@@ -116,23 +128,23 @@ void *MainAdmi::qt_metacast(const char *_clname)
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_ZN8MainAdmiE.stringdata0))
         return static_cast<void*>(this);
-    return QWidget::qt_metacast(_clname);
+    return QMainWindow::qt_metacast(_clname);
 }
 
 int MainAdmi::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QMainWindow::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 5;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 5)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 3;
+        _id -= 5;
     }
     return _id;
 }

@@ -1,46 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>admicompany</class>
- <widget class="QWidget" name="admicompany">
+ <class>AdmiCompany</class>
+ <widget class="QWidget" name="AdmiCompany">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>350</width>
+    <height>250</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Gestión de Usuarios - Empresa</string>
+   <string>Administración Empresa</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QListWidget" name="listWidget"/>
+    <widget class="QLabel" name="labelTitle">
+     <property name="text">
+      <string>Panel de Administrador Empresa</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <bold>true</bold>
+       <weight>75</weight>
+      </font>
+     </property>
+    </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QPushButton" name="btnCrear">
-       <property name="text">
-        <string>Crear</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnEditar">
-       <property name="text">
-        <string>Editar</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnBorrar">
-       <property name="text">
-        <string>Borrar</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QPushButton" name="btnGestionDepartamentos">
+     <property name="text">
+      <string>Gestionar Departamentos</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnGestionUsuarios">
+     <property name="text">
+      <string>Gestionar Usuarios</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

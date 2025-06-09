@@ -2,6 +2,9 @@
 #define EMPRESAFORM_H
 
 #include <QDialog>
+#include <QVariantMap>
+#include <QList>
+#include "EmpresaDAO.h"
 
 namespace Ui {
 class EmpresaForm;
@@ -15,22 +18,19 @@ public:
     explicit EmpresaForm(QWidget *parent = nullptr);
     ~EmpresaForm();
 
-signals:
-    void empresaGuardada(const QString &nombre);
-
 private slots:
-
-    void onCrearClicked();
-    void onBorrarClicked();
-    void onEditarClicked();
-    void onDeptClicked();
+    void on_btnCrear_clicked();
+    void on_btnEditar_clicked();
+    void on_btnBorrar_clicked();
 
 private:
     Ui::EmpresaForm *ui;
-    QString rutaArchivo;
+    EmpresaDAO dao;
+    QList<QVariantMap> listaEmpresas;
 
-    void cargarLista();
-    void guardarLista();
+    void cargarEmpresas();
+    void limpiarFormulario();
+
 };
 
 #endif // EMPRESAFORM_H

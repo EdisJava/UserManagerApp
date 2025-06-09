@@ -1,49 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>DptoForm</class>
- <widget class="QWidget" name="DptoForm">
+ <widget class="QDialog" name="DptoForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>493</width>
-    <height>314</height>
+    <width>392</width>
+    <height>301</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Departamento</string>
+   <string>Gestión de Departamentos</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QListWidget" name="listWidget"/>
+    <widget class="QTableView" name="tableViewDepartamentos"/>
    </item>
    <item>
-    <widget class="QPushButton" name="btnCrear">
-     <property name="text">
-      <string>Crear</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="labelNombre">
+       <property name="text">
+        <string>Nombre:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditNombre"/>
+     </item>
+    </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="btnBorrar">
-     <property name="text">
-      <string>Borrar</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btnEditar">
-     <property name="text">
-      <string>Editar</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btnAsignarUsr">
-     <property name="text">
-      <string>Asignar</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayoutButtons">
+     <item>
+      <widget class="QPushButton" name="btnCrear">
+       <property name="text">
+        <string>Crear</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnEditar">
+       <property name="text">
+        <string>Editar</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBorrar">
+       <property name="text">
+        <string>Borrar</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

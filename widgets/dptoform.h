@@ -1,6 +1,11 @@
 #ifndef DPTOFORM_H
 #define DPTOFORM_H
 
+#include <QWidget>
+#include <QStandardItemModel>
+#include <QList>
+#include <QVariantMap>
+#include "DepartamentoDAO.h"
 #include <QDialog>
 
 namespace Ui {
@@ -12,24 +17,27 @@ class DptoForm : public QDialog
     Q_OBJECT
 
 public:
-    explicit DptoForm(QWidget *parent = nullptr);
+    explicit DptoForm(DepartamentoDAO *dao, QWidget *parent = nullptr);
     ~DptoForm();
 
 private slots:
-    void on_btnCrear_clicked();
-    void on_btnBorrar_clicked();
-    void on_btnEditar_clicked();
-    void on_btnAsignarUsr_clicked();
+    void slotCrearDepartamento();
+    void slotEditarDepartamento();
+    void slotBorrarDepartamento();
+    void seleccionarDepartamento(const QModelIndex &current);
 
-
-signals:
-    void departamentoGuardado(const QString &nombre);
+    void on_DptoForm_accepted();
 
 private:
     Ui::DptoForm *ui;
+    QStandardItemModel *model;
 
+    DepartamentoDAO *dao;
+
+    int idDepartamentoSeleccionado;
+
+    void limpiarFormulario();
     void cargarDepartamentos();
-    void guardarDepartamentos();
 };
 
 #endif // DPTOFORM_H

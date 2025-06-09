@@ -11,10 +11,13 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
-#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QDialog>
+#include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
@@ -22,152 +25,70 @@ class Ui_Guess
 {
 public:
     QVBoxLayout *verticalLayout;
-    QGridLayout *gridLayout;
-    QLabel *labelDniText;
-    QLabel *labelDni;
-    QLabel *labelNombreText;
-    QLabel *labelNombre;
-    QLabel *labelTelefonoText;
-    QLabel *labelTelefono;
-    QLabel *labelEmailText;
-    QLabel *labelEmail;
-    QLabel *labelDepartamentoText;
-    QLabel *labelDepartamento;
-    QLabel *labelEmpresaText;
-    QLabel *labelEmpresa;
-    QLabel *labelEstadoText;
-    QLabel *labelEstado;
-    QLabel *labelRolText;
-    QLabel *labelRol;
-    QLabel *labelFoto;
+    QLabel *labelInfo;
+    QLineEdit *lineEditGuestName;
+    QHBoxLayout *buttonLayout;
+    QSpacerItem *horizontalSpacer;
+    QPushButton *btnOk;
+    QPushButton *btnCancel;
+    QSpacerItem *horizontalSpacer_2;
 
-    void setupUi(QWidget *Guess)
+    void setupUi(QDialog *Guess)
     {
         if (Guess->objectName().isEmpty())
             Guess->setObjectName("Guess");
-        Guess->resize(360, 320);
         verticalLayout = new QVBoxLayout(Guess);
         verticalLayout->setObjectName("verticalLayout");
-        gridLayout = new QGridLayout();
-        gridLayout->setObjectName("gridLayout");
-        labelDniText = new QLabel(Guess);
-        labelDniText->setObjectName("labelDniText");
+        labelInfo = new QLabel(Guess);
+        labelInfo->setObjectName("labelInfo");
+        labelInfo->setAlignment(Qt::AlignCenter);
 
-        gridLayout->addWidget(labelDniText, 0, 0, 1, 1);
+        verticalLayout->addWidget(labelInfo);
 
-        labelDni = new QLabel(Guess);
-        labelDni->setObjectName("labelDni");
+        lineEditGuestName = new QLineEdit(Guess);
+        lineEditGuestName->setObjectName("lineEditGuestName");
 
-        gridLayout->addWidget(labelDni, 0, 1, 1, 1);
+        verticalLayout->addWidget(lineEditGuestName);
 
-        labelNombreText = new QLabel(Guess);
-        labelNombreText->setObjectName("labelNombreText");
+        buttonLayout = new QHBoxLayout();
+        buttonLayout->setObjectName("buttonLayout");
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
-        gridLayout->addWidget(labelNombreText, 1, 0, 1, 1);
+        buttonLayout->addItem(horizontalSpacer);
 
-        labelNombre = new QLabel(Guess);
-        labelNombre->setObjectName("labelNombre");
+        btnOk = new QPushButton(Guess);
+        btnOk->setObjectName("btnOk");
 
-        gridLayout->addWidget(labelNombre, 1, 1, 1, 1);
+        buttonLayout->addWidget(btnOk);
 
-        labelTelefonoText = new QLabel(Guess);
-        labelTelefonoText->setObjectName("labelTelefonoText");
+        btnCancel = new QPushButton(Guess);
+        btnCancel->setObjectName("btnCancel");
 
-        gridLayout->addWidget(labelTelefonoText, 2, 0, 1, 1);
+        buttonLayout->addWidget(btnCancel);
 
-        labelTelefono = new QLabel(Guess);
-        labelTelefono->setObjectName("labelTelefono");
+        horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
-        gridLayout->addWidget(labelTelefono, 2, 1, 1, 1);
-
-        labelEmailText = new QLabel(Guess);
-        labelEmailText->setObjectName("labelEmailText");
-
-        gridLayout->addWidget(labelEmailText, 3, 0, 1, 1);
-
-        labelEmail = new QLabel(Guess);
-        labelEmail->setObjectName("labelEmail");
-
-        gridLayout->addWidget(labelEmail, 3, 1, 1, 1);
-
-        labelDepartamentoText = new QLabel(Guess);
-        labelDepartamentoText->setObjectName("labelDepartamentoText");
-
-        gridLayout->addWidget(labelDepartamentoText, 4, 0, 1, 1);
-
-        labelDepartamento = new QLabel(Guess);
-        labelDepartamento->setObjectName("labelDepartamento");
-
-        gridLayout->addWidget(labelDepartamento, 4, 1, 1, 1);
-
-        labelEmpresaText = new QLabel(Guess);
-        labelEmpresaText->setObjectName("labelEmpresaText");
-
-        gridLayout->addWidget(labelEmpresaText, 5, 0, 1, 1);
-
-        labelEmpresa = new QLabel(Guess);
-        labelEmpresa->setObjectName("labelEmpresa");
-
-        gridLayout->addWidget(labelEmpresa, 5, 1, 1, 1);
-
-        labelEstadoText = new QLabel(Guess);
-        labelEstadoText->setObjectName("labelEstadoText");
-
-        gridLayout->addWidget(labelEstadoText, 6, 0, 1, 1);
-
-        labelEstado = new QLabel(Guess);
-        labelEstado->setObjectName("labelEstado");
-
-        gridLayout->addWidget(labelEstado, 6, 1, 1, 1);
-
-        labelRolText = new QLabel(Guess);
-        labelRolText->setObjectName("labelRolText");
-
-        gridLayout->addWidget(labelRolText, 7, 0, 1, 1);
-
-        labelRol = new QLabel(Guess);
-        labelRol->setObjectName("labelRol");
-
-        gridLayout->addWidget(labelRol, 7, 1, 1, 1);
-
-        labelFoto = new QLabel(Guess);
-        labelFoto->setObjectName("labelFoto");
-        labelFoto->setMinimumSize(QSize(120, 120));
-        labelFoto->setFrameShape(QFrame::Shape::Box);
-        labelFoto->setFrameShadow(QFrame::Shadow::Raised);
-        labelFoto->setAlignment(Qt::AlignmentFlag::AlignCenter);
-
-        gridLayout->addWidget(labelFoto, 0, 2, 6, 1);
+        buttonLayout->addItem(horizontalSpacer_2);
 
 
-        verticalLayout->addLayout(gridLayout);
+        verticalLayout->addLayout(buttonLayout);
 
 
         retranslateUi(Guess);
 
+        btnOk->setDefault(true);
+
+
         QMetaObject::connectSlotsByName(Guess);
     } // setupUi
 
-    void retranslateUi(QWidget *Guess)
+    void retranslateUi(QDialog *Guess)
     {
-        Guess->setWindowTitle(QCoreApplication::translate("Guess", "Guess", nullptr));
-        labelDniText->setText(QCoreApplication::translate("Guess", "DNI:", nullptr));
-        labelDni->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelNombreText->setText(QCoreApplication::translate("Guess", "Nombre:", nullptr));
-        labelNombre->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelTelefonoText->setText(QCoreApplication::translate("Guess", "Tel\303\251fono:", nullptr));
-        labelTelefono->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelEmailText->setText(QCoreApplication::translate("Guess", "Email:", nullptr));
-        labelEmail->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelDepartamentoText->setText(QCoreApplication::translate("Guess", "Departamento:", nullptr));
-        labelDepartamento->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelEmpresaText->setText(QCoreApplication::translate("Guess", "Empresa:", nullptr));
-        labelEmpresa->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelEstadoText->setText(QCoreApplication::translate("Guess", "Estado:", nullptr));
-        labelEstado->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelRolText->setText(QCoreApplication::translate("Guess", "Rol:", nullptr));
-        labelRol->setText(QCoreApplication::translate("Guess", "---", nullptr));
-        labelFoto->setText(QCoreApplication::translate("Guess", "No hay foto", nullptr));
+        Guess->setWindowTitle(QCoreApplication::translate("Guess", "Acceso Usuario Invitado", nullptr));
+        labelInfo->setText(QCoreApplication::translate("Guess", "Por favor, ingresa tu nombre de invitado", nullptr));
+        lineEditGuestName->setPlaceholderText(QCoreApplication::translate("Guess", "Nombre Invitado", nullptr));
+        btnOk->setText(QCoreApplication::translate("Guess", "Aceptar", nullptr));
+        btnCancel->setText(QCoreApplication::translate("Guess", "Cancelar", nullptr));
     } // retranslateUi
 
 };

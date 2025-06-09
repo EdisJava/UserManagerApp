@@ -11,50 +11,64 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QDialog>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_MainAdmi
 {
 public:
-    QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout;
-    QPushButton *btnEmpresas;
-    QPushButton *btnDepartamentos;
-    QPushButton *btnUsuarios;
+    QLabel *labelTitle;
+    QListWidget *listWidgetUsers;
+    QHBoxLayout *buttonLayout;
+    QPushButton *btnAddUser;
+    QPushButton *btnEditUser;
+    QPushButton *btnDeleteUser;
 
-    void setupUi(QWidget *MainAdmi)
+    void setupUi(QDialog *MainAdmi)
     {
         if (MainAdmi->objectName().isEmpty())
             MainAdmi->setObjectName("MainAdmi");
-        MainAdmi->resize(400, 300);
-        horizontalLayout = new QHBoxLayout(MainAdmi);
-        horizontalLayout->setObjectName("horizontalLayout");
-        verticalLayout = new QVBoxLayout();
+        verticalLayout = new QVBoxLayout(MainAdmi);
         verticalLayout->setObjectName("verticalLayout");
-        btnEmpresas = new QPushButton(MainAdmi);
-        btnEmpresas->setObjectName("btnEmpresas");
+        labelTitle = new QLabel(MainAdmi);
+        labelTitle->setObjectName("labelTitle");
+        labelTitle->setAlignment(Qt::AlignCenter);
+        labelTitle->setMinimumSize(QSize(300, 40));
 
-        verticalLayout->addWidget(btnEmpresas);
+        verticalLayout->addWidget(labelTitle);
 
-        btnDepartamentos = new QPushButton(MainAdmi);
-        btnDepartamentos->setObjectName("btnDepartamentos");
+        listWidgetUsers = new QListWidget(MainAdmi);
+        listWidgetUsers->setObjectName("listWidgetUsers");
+        listWidgetUsers->setMinimumSize(QSize(250, 150));
 
-        verticalLayout->addWidget(btnDepartamentos);
+        verticalLayout->addWidget(listWidgetUsers);
 
-        btnUsuarios = new QPushButton(MainAdmi);
-        btnUsuarios->setObjectName("btnUsuarios");
+        buttonLayout = new QHBoxLayout();
+        buttonLayout->setObjectName("buttonLayout");
+        btnAddUser = new QPushButton(MainAdmi);
+        btnAddUser->setObjectName("btnAddUser");
 
-        verticalLayout->addWidget(btnUsuarios);
+        buttonLayout->addWidget(btnAddUser);
 
-        verticalLayout->setStretch(0, 1);
-        verticalLayout->setStretch(2, 1);
+        btnEditUser = new QPushButton(MainAdmi);
+        btnEditUser->setObjectName("btnEditUser");
 
-        horizontalLayout->addLayout(verticalLayout);
+        buttonLayout->addWidget(btnEditUser);
+
+        btnDeleteUser = new QPushButton(MainAdmi);
+        btnDeleteUser->setObjectName("btnDeleteUser");
+
+        buttonLayout->addWidget(btnDeleteUser);
+
+
+        verticalLayout->addLayout(buttonLayout);
 
 
         retranslateUi(MainAdmi);
@@ -62,12 +76,13 @@ public:
         QMetaObject::connectSlotsByName(MainAdmi);
     } // setupUi
 
-    void retranslateUi(QWidget *MainAdmi)
+    void retranslateUi(QDialog *MainAdmi)
     {
-        MainAdmi->setWindowTitle(QCoreApplication::translate("MainAdmi", "Administrador General", nullptr));
-        btnEmpresas->setText(QCoreApplication::translate("MainAdmi", "Gestionar Empresas", nullptr));
-        btnDepartamentos->setText(QCoreApplication::translate("MainAdmi", "Gestionar Departamentos", nullptr));
-        btnUsuarios->setText(QCoreApplication::translate("MainAdmi", "Gestionar Usuarios", nullptr));
+        MainAdmi->setWindowTitle(QCoreApplication::translate("MainAdmi", "Panel Administrativo", nullptr));
+        labelTitle->setText(QCoreApplication::translate("MainAdmi", "Panel de Administraci\303\263n", nullptr));
+        btnAddUser->setText(QCoreApplication::translate("MainAdmi", "Agregar Usuario", nullptr));
+        btnEditUser->setText(QCoreApplication::translate("MainAdmi", "Editar Usuario", nullptr));
+        btnDeleteUser->setText(QCoreApplication::translate("MainAdmi", "Eliminar Usuario", nullptr));
     } // retranslateUi
 
 };

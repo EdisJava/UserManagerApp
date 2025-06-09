@@ -11,33 +11,51 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Administrador General</string>
+   <string>Panel Administrativo</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,1">
-     <item>
-      <widget class="QPushButton" name="btnEmpresas">
-       <property name="text">
-        <string>Gestionar Empresas</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnDepartamentos">
-       <property name="text">
-        <string>Gestionar Departamentos</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnUsuarios">
-       <property name="text">
-        <string>Gestionar Usuarios</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QLabel" name="labelTitle">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>14</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Panel de Administrador Total</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnGestionDepartamentos">
+     <property name="text">
+      <string>Gestionar Departamentos</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnGestionEmpresas">
+     <property name="text">
+      <string>Gestionar Empresas</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="btnGestionUsuarios">
+     <property name="text">
+      <string>Gestionar Usuarios</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

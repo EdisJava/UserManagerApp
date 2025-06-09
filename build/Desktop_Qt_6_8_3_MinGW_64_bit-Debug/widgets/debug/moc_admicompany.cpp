@@ -31,29 +31,31 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 QT_WARNING_DISABLE_GCC("-Wuseless-cast")
 namespace {
-struct qt_meta_tag_ZN11admicompanyE_t {};
+struct qt_meta_tag_ZN11AdmiCompanyE_t {};
 } // unnamed namespace
 
 
 #ifdef QT_MOC_HAS_STRINGDATA
-static constexpr auto qt_meta_stringdata_ZN11admicompanyE = QtMocHelpers::stringData(
-    "admicompany",
-    "on_btnCrear_clicked",
+static constexpr auto qt_meta_stringdata_ZN11AdmiCompanyE = QtMocHelpers::stringData(
+    "AdmiCompany",
+    "cargarEmpresas",
     "",
-    "on_btnEditar_clicked",
-    "on_btnBorrar_clicked"
+    "on_btnNuevaEmpresa_clicked",
+    "on_btnEditarEmpresa_clicked",
+    "on_btnEliminarEmpresa_clicked",
+    "on_listWidget_itemSelectionChanged"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
 #endif // !QT_MOC_HAS_STRINGDATA
 
-Q_CONSTINIT static const uint qt_meta_data_ZN11admicompanyE[] = {
+Q_CONSTINIT static const uint qt_meta_data_ZN11AdmiCompanyE[] = {
 
  // content:
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       3,   14, // methods
+       5,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -61,11 +63,15 @@ Q_CONSTINIT static const uint qt_meta_data_ZN11admicompanyE[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    0,   32,    2, 0x08,    1 /* Private */,
-       3,    0,   33,    2, 0x08,    2 /* Private */,
-       4,    0,   34,    2, 0x08,    3 /* Private */,
+       1,    0,   44,    2, 0x08,    1 /* Private */,
+       3,    0,   45,    2, 0x08,    2 /* Private */,
+       4,    0,   46,    2, 0x08,    3 /* Private */,
+       5,    0,   47,    2, 0x08,    4 /* Private */,
+       6,    0,   48,    2, 0x08,    5 /* Private */,
 
  // slots: parameters
+    QMetaType::Void,
+    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -73,66 +79,72 @@ Q_CONSTINIT static const uint qt_meta_data_ZN11admicompanyE[] = {
        0        // eod
 };
 
-Q_CONSTINIT const QMetaObject admicompany::staticMetaObject = { {
-    QMetaObject::SuperData::link<QWidget::staticMetaObject>(),
-    qt_meta_stringdata_ZN11admicompanyE.offsetsAndSizes,
-    qt_meta_data_ZN11admicompanyE,
+Q_CONSTINIT const QMetaObject AdmiCompany::staticMetaObject = { {
+    QMetaObject::SuperData::link<QDialog::staticMetaObject>(),
+    qt_meta_stringdata_ZN11AdmiCompanyE.offsetsAndSizes,
+    qt_meta_data_ZN11AdmiCompanyE,
     qt_static_metacall,
     nullptr,
-    qt_incomplete_metaTypeArray<qt_meta_tag_ZN11admicompanyE_t,
+    qt_incomplete_metaTypeArray<qt_meta_tag_ZN11AdmiCompanyE_t,
         // Q_OBJECT / Q_GADGET
-        QtPrivate::TypeAndForceComplete<admicompany, std::true_type>,
-        // method 'on_btnCrear_clicked'
+        QtPrivate::TypeAndForceComplete<AdmiCompany, std::true_type>,
+        // method 'cargarEmpresas'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_btnEditar_clicked'
+        // method 'on_btnNuevaEmpresa_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'on_btnBorrar_clicked'
+        // method 'on_btnEditarEmpresa_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_btnEliminarEmpresa_clicked'
+        QtPrivate::TypeAndForceComplete<void, std::false_type>,
+        // method 'on_listWidget_itemSelectionChanged'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
 } };
 
-void admicompany::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void AdmiCompany::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
-    auto *_t = static_cast<admicompany *>(_o);
+    auto *_t = static_cast<AdmiCompany *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->on_btnCrear_clicked(); break;
-        case 1: _t->on_btnEditar_clicked(); break;
-        case 2: _t->on_btnBorrar_clicked(); break;
+        case 0: _t->cargarEmpresas(); break;
+        case 1: _t->on_btnNuevaEmpresa_clicked(); break;
+        case 2: _t->on_btnEditarEmpresa_clicked(); break;
+        case 3: _t->on_btnEliminarEmpresa_clicked(); break;
+        case 4: _t->on_listWidget_itemSelectionChanged(); break;
         default: ;
         }
     }
     (void)_a;
 }
 
-const QMetaObject *admicompany::metaObject() const
+const QMetaObject *AdmiCompany::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *admicompany::qt_metacast(const char *_clname)
+void *AdmiCompany::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_ZN11admicompanyE.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_ZN11AdmiCompanyE.stringdata0))
         return static_cast<void*>(this);
-    return QWidget::qt_metacast(_clname);
+    return QDialog::qt_metacast(_clname);
 }
 
-int admicompany::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int AdmiCompany::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QWidget::qt_metacall(_c, _id, _a);
+    _id = QDialog::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 5)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 5;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 5)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 3;
+        _id -= 5;
     }
     return _id;
 }

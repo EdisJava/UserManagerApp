@@ -1,141 +1,155 @@
 #include "dptoform.h"
-#include "qsqlerror.h"
-#include "qsqlquery.h"
 #include "ui_dptoform.h"
-
-#include <QFile>
-#include <QTextStream>
-#include <QInputDialog>
 #include <QMessageBox>
+#include <QStandardItem>
 
-DptoForm::DptoForm(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::DptoForm)
+DptoForm::DptoForm(DepartamentoDAO *dao, QWidget *parent)
+    : QDialog(parent),
+    ui(new Ui::DptoForm),
+    model(new QStandardItemModel(this)),
+    dao(dao),
+    idDepartamentoSeleccionado(-1)
 {
     ui->setupUi(this);
-    cargarDepartamentos();
 
+    model->setColumnCount(2);
+    model->setHeaderData(0, Qt::Horizontal, "ID");
+    model->setHeaderData(1, Qt::Horizontal, "Nombre");
+
+    ui->tableViewDepartamentos->setModel(model);
+    ui->tableViewDepartamentos->hideColumn(0); // ocultar id
+    ui->tableViewDepartamentos->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableViewDepartamentos->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    connect(ui->btnCrear, &QPushButton::clicked, this, &DptoForm::slotCrearDepartamento);
+    connect(ui->btnEditar, &QPushButton::clicked, this, &DptoForm::slotEditarDepartamento);
+    connect(ui->btnBorrar, &QPushButton::clicked, this, &DptoForm::slotBorrarDepartamento);
+    connect(ui->tableViewDepartamentos->selectionModel(), &QItemSelectionModel::currentRowChanged,
+            this, &DptoForm::seleccionarDepartamento);
+
+    limpiarFormulario();
+    cargarDepartamentos();
 }
 
 DptoForm::~DptoForm()
 {
-    guardarDepartamentos();
     delete ui;
+}
+
+void DptoForm::limpiarFormulario()
+{
+    idDepartamentoSeleccionado = -1;
+    ui->lineEditNombre->clear();
+    ui->tableViewDepartamentos->clearSelection();
 }
 
 void DptoForm::cargarDepartamentos()
 {
-    ui->listWidget->clear();
+    model->removeRows(0, model->rowCount());
 
-    QSqlQuery query;
-    if (!query.exec("SELECT nombre FROM departamentos ORDER BY nombre ASC")) {
-        QMessageBox::warning(this, "Error BD", "Error al cargar departamentos: " + query.lastError().text());
+    QList<QVariantMap> departamentos = dao->listarDepartamentos();
+
+    for (const QVariantMap &dep : departamentos) {
+        QList<QStandardItem *> fila;
+        fila.append(new QStandardItem(dep.value("id").toString()));
+        fila.append(new QStandardItem(dep.value("nombre").toString()));
+        model->appendRow(fila);
+    }
+
+    limpiarFormulario();
+}
+
+void DptoForm::seleccionarDepartamento(const QModelIndex &current)
+{
+    if (!current.isValid()) {
+        limpiarFormulario();
         return;
     }
 
-    while (query.next()) {
-        QString nombre = query.value(0).toString();
-        ui->listWidget->addItem(nombre);
-    }
+    idDepartamentoSeleccionado = model->data(model->index(current.row(), 0)).toInt();
+    QString nombre = model->data(model->index(current.row(), 1)).toString();
+    ui->lineEditNombre->setText(nombre);
 }
 
-
-void DptoForm::guardarDepartamentos()
+void DptoForm::slotCrearDepartamento()
 {
-    QFile file("departamentos.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    QString nombre = ui->lineEditNombre->text().trimmed();
+    if (nombre.isEmpty()) {
+        QMessageBox::warning(this, "Error", "El nombre no puede estar vacío.");
         return;
-
-    QTextStream out(&file);
-    for (int i = 0; i < ui->listWidget->count(); ++i) {
-        out << ui->listWidget->item(i)->text() << "\n";
     }
 
-    file.close();
+    if (dao->existeNombreDepartamento(nombre)) {
+        QMessageBox::warning(this, "Error", "Ya existe un departamento con ese nombre.");
+        return;
+    }
+
+    QVariantMap departamento;
+    departamento["nombre"] = nombre;
+
+    QString errorMsg;
+    if (!dao->insertarDepartamento(departamento, errorMsg)) {
+        QMessageBox::critical(this, "Error", "No se pudo insertar el departamento:\n" + errorMsg);
+        return;
+    }
+
+    cargarDepartamentos();
 }
 
-void DptoForm::on_btnCrear_clicked()
+void DptoForm::slotEditarDepartamento()
 {
-    bool ok;
-    QString nombre = QInputDialog::getText(this, tr("Crear Departamento"),
-                                           tr("Nombre del departamento:"), QLineEdit::Normal,
-                                           "", &ok);
-    if (ok && !nombre.isEmpty()) {
-        // Verificar si ya existe
-        QSqlQuery checkQuery;
-        checkQuery.prepare("SELECT COUNT(*) FROM departamentos WHERE nombre = ?");
-        checkQuery.addBindValue(nombre);
-        if (!checkQuery.exec() || !checkQuery.next()) {
-            QMessageBox::warning(this, "Error BD", "Error al verificar departamento: " + checkQuery.lastError().text());
-            return;
-        }
-        if (checkQuery.value(0).toInt() > 0) {
-            QMessageBox::warning(this, "Duplicado", "Ya existe un departamento con ese nombre.");
-            return;
-        }
+    if (idDepartamentoSeleccionado < 0) {
+        QMessageBox::warning(this, "Error", "Seleccione un departamento para editar.");
+        return;
+    }
 
-        // Insertar departamento
-        QSqlQuery insertQuery;
-        insertQuery.prepare("INSERT INTO departamentos (nombre) VALUES (?)");
-        insertQuery.addBindValue(nombre);
-        if (!insertQuery.exec()) {
-            QMessageBox::warning(this, "Error BD", "No se pudo crear departamento: " + insertQuery.lastError().text());
+    QString nombre = ui->lineEditNombre->text().trimmed();
+    if (nombre.isEmpty()) {
+        QMessageBox::warning(this, "Error", "El nombre no puede estar vacío.");
+        return;
+    }
+
+    if (dao->existeNombreDepartamento(nombre, idDepartamentoSeleccionado)) {
+        QMessageBox::warning(this, "Error", "Ya existe un departamento con ese nombre.");
+        return;
+    }
+
+    QVariantMap departamento;
+    departamento["id"] = idDepartamentoSeleccionado;
+    departamento["nombre"] = nombre;
+
+    QString errorMsg;
+    if (!dao->actualizarDepartamento(departamento, errorMsg)) {
+        QMessageBox::critical(this, "Error", "No se pudo actualizar el departamento:\n" + errorMsg);
+        return;
+    }
+
+    cargarDepartamentos();
+}
+
+void DptoForm::slotBorrarDepartamento()
+{
+    if (idDepartamentoSeleccionado < 0) {
+        QMessageBox::warning(this, "Error", "Seleccione un departamento para borrar.");
+        return;
+    }
+
+    int ret = QMessageBox::question(this, "Confirmar borrado",
+                                    "¿Está seguro de que desea borrar este departamento?",
+                                    QMessageBox::Yes | QMessageBox::No);
+
+    if (ret == QMessageBox::Yes) {
+        QString errorMsg;
+        if (!dao->eliminarDepartamento(idDepartamentoSeleccionado, errorMsg)) {
+            QMessageBox::critical(this, "Error", "No se pudo borrar el departamento:\n" + errorMsg);
             return;
         }
-
         cargarDepartamentos();
-        emit departamentoGuardado(nombre);
     }
 }
 
-
-void DptoForm::on_btnBorrar_clicked()
+void DptoForm::on_DptoForm_accepted()
 {
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Selecciona", "Debes seleccionar un departamento.");
-        return;
-    }
 
-    if (QMessageBox::question(this, "Borrar",
-                              "¿Estás seguro de borrar el departamento '" + item->text() + "'?") == QMessageBox::Yes) {
-        delete item;
-    }
-}
-
-void DptoForm::on_btnEditar_clicked()
-{
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Selecciona", "Debes seleccionar un departamento.");
-        return;
-    }
-
-    bool ok;
-    QString nuevoNombre = QInputDialog::getText(this, tr("Editar Departamento"),
-                                                tr("Nuevo nombre:"), QLineEdit::Normal,
-                                                item->text(), &ok);
-    if (ok && !nuevoNombre.isEmpty()) {
-        for (int i = 0; i < ui->listWidget->count(); ++i) {
-            QListWidgetItem *otro = ui->listWidget->item(i);
-            if (otro != item && otro->text().compare(nuevoNombre, Qt::CaseInsensitive) == 0) {
-                QMessageBox::warning(this, "Duplicado", "Ya existe un departamento con ese nombre.");
-                return;
-            }
-        }
-        item->setText(nuevoNombre);
-    }
-}
-
-void DptoForm::on_btnAsignarUsr_clicked()
-{
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Selecciona", "Selecciona un departamento para asignar usuarios.");
-        return;
-    }
-
-    QMessageBox::information(this, "Asignar Usuario", "Aquí abrirías la ventana para asignar usuarios al departamento: " + item->text());
-    // Aquí podrías abrir tu ventana `Asignar`
 }
 

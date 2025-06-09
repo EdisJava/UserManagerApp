@@ -1,7 +1,5 @@
-AAA
+Jefe Mecanico
+Vendedor
+cajero
 conductor
-jefazo
-marketing
-profesor de yoga
-prueba
-prueba2
+mecanico

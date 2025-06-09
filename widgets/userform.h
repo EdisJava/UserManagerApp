@@ -2,7 +2,8 @@
 #define USERFORM_H
 
 #include <QDialog>
-#include <QSqlQuery>
+#include <QVariantMap>
+#include "UsuarioDAO.h"
 
 namespace Ui {
 class UserForm;
@@ -13,42 +14,23 @@ class UserForm : public QDialog
     Q_OBJECT
 
 public:
-    explicit UserForm(QWidget *parent = nullptr);
+    explicit UserForm(UsuarioDAO* dao, QWidget *parent = nullptr);
     ~UserForm();
 
-    void setDatosUsuario(const QString &dni,
-                         const QString &nombre,
-                         const QString &telefono,
-                         const QString &email,
-                         const QString &departamento,
-                         const QString &empresa,
-                         const QString &estado,
-                         const QString &foto,
-                         const QString &rol);
-
-    QStringList getUsuario() const;
-    void cargarListasDesdeBD();
-    void loadDepartamentos();
-    void loadEmpresas();
-public:
-    void setModoAdminEmpresa(bool esAdminEmpresa);
-
-signals:
-    void usuarioGuardado();
+    void setUserData(const QVariantMap &data);
+    QVariantMap getUserData() const;
+    void validarVisualmenteDNI(const QString &dni);
 
 private slots:
     void on_btnGuardar_clicked();
-    void on_btnExaminar_clicked();
-
-private:
-    bool m_esAdminEmpresa = false;
+    void on_btnCancelar_clicked();
+    void on_btnSeleccionarFoto_clicked();
 
 private:
     Ui::UserForm *ui;
-    bool modoEdicion;          // ✅ aquí sí
-    QString dniOriginal;       // ✅ aquí sí
+    UsuarioDAO* dao;  // Puntero para no copiar el DAO
 
-    bool existeUsuario(const QString &dni);
+    void cargarDepartamentosYEmpresas();
 };
 
 #endif // USERFORM_H

@@ -1,15 +1,22 @@
+// database.h
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include <QtSql/QSqlDatabase>
-#include <QString>
+#include <QSqlDatabase>
 
-class database {
+class database
+{
 public:
-    static bool connect(const QString &dbPath);
     static QSqlDatabase& get();
+    static bool open();
+    static void close();
 
 private:
+    database() = default;
+    ~database() = default;
+    database(const database&) = delete;
+    database& operator=(const database&) = delete;
+
     static QSqlDatabase db;
 };
 

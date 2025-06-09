@@ -40,11 +40,8 @@ static constexpr auto qt_meta_stringdata_ZN11EmpresaFormE = QtMocHelpers::string
     "EmpresaForm",
     "empresaGuardada",
     "",
-    "nombre",
-    "onCrearClicked",
-    "onBorrarClicked",
-    "onEditarClicked",
-    "onDeptClicked"
+    "on_btnGuardar_clicked",
+    "on_btnCancelar_clicked"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -56,7 +53,7 @@ Q_CONSTINIT static const uint qt_meta_data_ZN11EmpresaFormE[] = {
       12,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       3,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -64,20 +61,16 @@ Q_CONSTINIT static const uint qt_meta_data_ZN11EmpresaFormE[] = {
        1,       // signalCount
 
  // signals: name, argc, parameters, tag, flags, initial metatype offsets
-       1,    1,   44,    2, 0x06,    1 /* Public */,
+       1,    0,   32,    2, 0x06,    1 /* Public */,
 
  // slots: name, argc, parameters, tag, flags, initial metatype offsets
-       4,    0,   47,    2, 0x08,    3 /* Private */,
-       5,    0,   48,    2, 0x08,    4 /* Private */,
-       6,    0,   49,    2, 0x08,    5 /* Private */,
-       7,    0,   50,    2, 0x08,    6 /* Private */,
+       3,    0,   33,    2, 0x08,    2 /* Private */,
+       4,    0,   34,    2, 0x08,    3 /* Private */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::QString,    3,
+    QMetaType::Void,
 
  // slots: parameters
-    QMetaType::Void,
-    QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
 
@@ -95,14 +88,9 @@ Q_CONSTINIT const QMetaObject EmpresaForm::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<EmpresaForm, std::true_type>,
         // method 'empresaGuardada'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        QtPrivate::TypeAndForceComplete<const QString &, std::false_type>,
-        // method 'onCrearClicked'
+        // method 'on_btnGuardar_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'onBorrarClicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'onEditarClicked'
-        QtPrivate::TypeAndForceComplete<void, std::false_type>,
-        // method 'onDeptClicked'
+        // method 'on_btnCancelar_clicked'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -113,18 +101,16 @@ void EmpresaForm::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
     auto *_t = static_cast<EmpresaForm *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->empresaGuardada((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
-        case 1: _t->onCrearClicked(); break;
-        case 2: _t->onBorrarClicked(); break;
-        case 3: _t->onEditarClicked(); break;
-        case 4: _t->onDeptClicked(); break;
+        case 0: _t->empresaGuardada(); break;
+        case 1: _t->on_btnGuardar_clicked(); break;
+        case 2: _t->on_btnCancelar_clicked(); break;
         default: ;
         }
     }
     if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _q_method_type = void (EmpresaForm::*)(const QString & );
+            using _q_method_type = void (EmpresaForm::*)();
             if (_q_method_type _q_method = &EmpresaForm::empresaGuardada; *reinterpret_cast<_q_method_type *>(_a[1]) == _q_method) {
                 *result = 0;
                 return;
@@ -152,22 +138,21 @@ int EmpresaForm::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 5)
+        if (_id < 3)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 3;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 5)
+        if (_id < 3)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 5;
+        _id -= 3;
     }
     return _id;
 }
 
 // SIGNAL 0
-void EmpresaForm::empresaGuardada(const QString & _t1)
+void EmpresaForm::empresaGuardada()
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
-    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+    QMetaObject::activate(this, &staticMetaObject, 0, nullptr);
 }
 QT_WARNING_POP

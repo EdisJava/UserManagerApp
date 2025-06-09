@@ -10,14 +10,13 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtGui/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
@@ -26,88 +25,72 @@ QT_BEGIN_NAMESPACE
 class Ui_MainWindow
 {
 public:
+    QAction *actionSalir;
+    QAction *actionNuevo;
+    QAction *actionGuardar;
     QWidget *centralwidget;
-    QTabWidget *tabWidget;
-    QWidget *Login;
-    QLineEdit *lineEditUsuario;
-    QPushButton *btnEntrar;
-    QLabel *label;
-    QWidget *AdminTotal;
-    QWidget *AdminEmpresa;
-    QWidget *verticalLayoutWidget;
     QVBoxLayout *verticalLayout;
-    QWidget *UsuarioEstandar;
+    QLabel *labelWelcome;
     QMenuBar *menubar;
-    QStatusBar *statusbar;
+    QMenu *menuArchivo;
+    QMenu *menuEditar;
+    QToolBar *mainToolBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName("MainWindow");
-        MainWindow->resize(800, 600);
+        actionSalir = new QAction(MainWindow);
+        actionSalir->setObjectName("actionSalir");
+        actionNuevo = new QAction(MainWindow);
+        actionNuevo->setObjectName("actionNuevo");
+        actionGuardar = new QAction(MainWindow);
+        actionGuardar->setObjectName("actionGuardar");
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
-        tabWidget = new QTabWidget(centralwidget);
-        tabWidget->setObjectName("tabWidget");
-        tabWidget->setGeometry(QRect(150, 50, 581, 441));
-        Login = new QWidget();
-        Login->setObjectName("Login");
-        QSizePolicy sizePolicy(QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
-        sizePolicy.setHeightForWidth(Login->sizePolicy().hasHeightForWidth());
-        Login->setSizePolicy(sizePolicy);
-        lineEditUsuario = new QLineEdit(Login);
-        lineEditUsuario->setObjectName("lineEditUsuario");
-        lineEditUsuario->setGeometry(QRect(130, 140, 231, 21));
-        btnEntrar = new QPushButton(Login);
-        btnEntrar->setObjectName("btnEntrar");
-        btnEntrar->setGeometry(QRect(200, 200, 80, 24));
-        label = new QLabel(Login);
-        label->setObjectName("label");
-        label->setGeometry(QRect(130, 120, 153, 16));
-        tabWidget->addTab(Login, QString());
-        AdminTotal = new QWidget();
-        AdminTotal->setObjectName("AdminTotal");
-        tabWidget->addTab(AdminTotal, QString());
-        AdminEmpresa = new QWidget();
-        AdminEmpresa->setObjectName("AdminEmpresa");
-        verticalLayoutWidget = new QWidget(AdminEmpresa);
-        verticalLayoutWidget->setObjectName("verticalLayoutWidget");
-        verticalLayoutWidget->setGeometry(QRect(0, 0, 581, 411));
-        verticalLayout = new QVBoxLayout(verticalLayoutWidget);
+        verticalLayout = new QVBoxLayout(centralwidget);
         verticalLayout->setObjectName("verticalLayout");
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
-        tabWidget->addTab(AdminEmpresa, QString());
-        UsuarioEstandar = new QWidget();
-        UsuarioEstandar->setObjectName("UsuarioEstandar");
-        tabWidget->addTab(UsuarioEstandar, QString());
+        labelWelcome = new QLabel(centralwidget);
+        labelWelcome->setObjectName("labelWelcome");
+        labelWelcome->setAlignment(Qt::AlignCenter);
+        labelWelcome->setMinimumSize(QSize(400, 200));
+
+        verticalLayout->addWidget(labelWelcome);
+
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 21));
+        menubar->setGeometry(QRect(0, 0, 600, 20));
+        menuArchivo = new QMenu(menubar);
+        menuArchivo->setObjectName("menuArchivo");
+        menuEditar = new QMenu(menubar);
+        menuEditar->setObjectName("menuEditar");
         MainWindow->setMenuBar(menubar);
-        statusbar = new QStatusBar(MainWindow);
-        statusbar->setObjectName("statusbar");
-        MainWindow->setStatusBar(statusbar);
+        mainToolBar = new QToolBar(MainWindow);
+        mainToolBar->setObjectName("mainToolBar");
+        MainWindow->addToolBar(mainToolBar);
+
+        menubar->addAction(menuArchivo->menuAction());
+        menubar->addAction(menuEditar->menuAction());
+        menuArchivo->addAction(actionSalir);
+        mainToolBar->addAction(actionNuevo);
+        mainToolBar->addAction(actionGuardar);
 
         retranslateUi(MainWindow);
-
-        tabWidget->setCurrentIndex(2);
-
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
-        btnEntrar->setText(QCoreApplication::translate("MainWindow", "Entrar", nullptr));
-        label->setText(QCoreApplication::translate("MainWindow", "Inserte su nombre de usuario", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(Login), QCoreApplication::translate("MainWindow", "Inicio", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(AdminTotal), QCoreApplication::translate("MainWindow", "Admin Total", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(AdminEmpresa), QCoreApplication::translate("MainWindow", "Admin Empresa", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(UsuarioEstandar), QCoreApplication::translate("MainWindow", "Usuario", nullptr));
+        MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "Aplicaci\303\263n Principal", nullptr));
+        actionSalir->setText(QCoreApplication::translate("MainWindow", "Salir", nullptr));
+        actionNuevo->setText(QCoreApplication::translate("MainWindow", "Nuevo", nullptr));
+        actionGuardar->setText(QCoreApplication::translate("MainWindow", "Guardar", nullptr));
+        labelWelcome->setText(QCoreApplication::translate("MainWindow", "Bienvenido a la Aplicaci\303\263n", nullptr));
+        menuArchivo->setTitle(QCoreApplication::translate("MainWindow", "&Archivo", nullptr));
+        menuEditar->setTitle(QCoreApplication::translate("MainWindow", "&Editar", nullptr));
+        mainToolBar->setWindowTitle(QCoreApplication::translate("MainWindow", "Barra de Herramientas", nullptr));
     } // retranslateUi
 
 };

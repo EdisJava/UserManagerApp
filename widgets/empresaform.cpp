@@ -1,15 +1,8 @@
-#include "empresaform.h"
-#include "ui_empresaform.h"
-
+#include "EmpresaForm.h"
+#include "ui_EmpresaForm.h"
 #include <QMessageBox>
-#include <QInputDialog>
-#include <QFile>
-#include <QTextStream>
-#include <QStandardPaths>
-#include <QDir>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QDebug>
+#include <QStandardItemModel>
+#include <QHeaderView>
 
 EmpresaForm::EmpresaForm(QWidget *parent) :
     QDialog(parent),
@@ -17,19 +10,13 @@ EmpresaForm::EmpresaForm(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Crear ruta segura donde guardar archivo
-    QString base = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    QDir dir(base);
-    if (!dir.exists()) dir.mkpath(".");
+    // Configurar tableView solo 1 vez
+    ui->tableViewEmpresas->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableViewEmpresas->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->tableViewEmpresas->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableViewEmpresas->horizontalHeader()->setStretchLastSection(true);
 
-    rutaArchivo = base + "/empresas.txt";
-
-    cargarLista();
-
-    connect(ui->Crear, &QPushButton::clicked, this, &EmpresaForm::onCrearClicked);
-    connect(ui->Borrar, &QPushButton::clicked, this, &EmpresaForm::onBorrarClicked);
-    connect(ui->Editar, &QPushButton::clicked, this, &EmpresaForm::onEditarClicked);
-    connect(ui->NuevoDept, &QPushButton::clicked, this, &EmpresaForm::onDeptClicked);
+    cargarEmpresas();
 }
 
 EmpresaForm::~EmpresaForm()
@@ -37,133 +24,119 @@ EmpresaForm::~EmpresaForm()
     delete ui;
 }
 
-
-void EmpresaForm::cargarLista()
+void EmpresaForm::cargarEmpresas()
 {
-    ui->listWidget->clear();
+    listaEmpresas = dao.listarEmpresas();
 
-    QSqlQuery query;
-    if (!query.exec("SELECT nombre FROM empresas ORDER BY nombre ASC")) {
-        QMessageBox::warning(this, "Error BD", "Error al cargar empresas: " + query.lastError().text());
+    // Eliminar modelo anterior si existe para evitar fugas y conflictos
+    QAbstractItemModel *modeloAnterior = ui->tableViewEmpresas->model();
+    if (modeloAnterior) {
+        delete modeloAnterior;
+        ui->tableViewEmpresas->setModel(nullptr);
+    }
+
+    int filas = listaEmpresas.size();
+
+    QStandardItemModel *model = new QStandardItemModel(filas, 1, this);
+    model->setHeaderData(0, Qt::Horizontal, tr("Nombre"));
+
+    for (int row = 0; row < filas; ++row) {
+        QVariantMap empresa = listaEmpresas.at(row);
+        QString nombre = empresa.value("nombre").toString();
+        QStandardItem *itemNombre = new QStandardItem(nombre);
+        model->setItem(row, 0, itemNombre);
+    }
+
+    ui->tableViewEmpresas->setModel(model);
+    ui->tableViewEmpresas->resizeColumnsToContents();
+    ui->tableViewEmpresas->horizontalHeader()->setStretchLastSection(true);
+}
+
+void EmpresaForm::limpiarFormulario()
+{
+    ui->lineEditNombre->clear();
+    ui->tableViewEmpresas->clearSelection();
+}
+
+void EmpresaForm::on_btnCrear_clicked()
+{
+    QString nombre = ui->lineEditNombre->text().trimmed();
+    if (nombre.isEmpty()) {
+        QMessageBox::warning(this, tr("Error"), tr("El nombre no puede estar vacío"));
         return;
     }
 
-    while (query.next()) {
-        QString nombre = query.value(0).toString();
-        ui->listWidget->addItem(nombre);
-    }
-}
-void EmpresaForm::guardarLista()
-{
-    QFile file(rutaArchivo);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(this, "Error", "No se pudo guardar el archivo de empresas.");
+    QVariantMap empresa;
+    empresa["nombre"] = nombre;
+
+    QString errorMsg;
+    if (!dao.insertarEmpresa(empresa, errorMsg)) {
+        QMessageBox::critical(this, tr("Error al crear"), errorMsg);
         return;
     }
 
-    QTextStream out(&file);
-    for (int i = 0; i < ui->listWidget->count(); ++i) {
-        out << ui->listWidget->item(i)->text() << "\n";
-    }
-
-    file.close();
+    cargarEmpresas();
+    limpiarFormulario();
 }
 
-void EmpresaForm::onCrearClicked()
+void EmpresaForm::on_btnEditar_clicked()
 {
-    bool ok;
-    QString nombre = QInputDialog::getText(this, tr("Crear Empresa"),
-                                           tr("Nombre de la empresa:"), QLineEdit::Normal,
-                                           "", &ok);
-    if (ok && !nombre.isEmpty()) {
-        // Verificar si ya existe
-        QSqlQuery checkQuery;
-        checkQuery.prepare("SELECT COUNT(*) FROM empresas WHERE nombre = ?");
-        checkQuery.addBindValue(nombre);
-        if (!checkQuery.exec() || !checkQuery.next()) {
-            QMessageBox::warning(this, "Error BD", "Error al verificar empresa: " + checkQuery.lastError().text());
-            return;
-        }
-        if (checkQuery.value(0).toInt() > 0) {
-            QMessageBox::warning(this, "Empresa duplicada", "Ya existe una empresa con ese nombre.");
-            return;
-        }
-
-        // Insertar empresa
-        QSqlQuery insertQuery;
-        insertQuery.prepare("INSERT INTO empresas (nombre) VALUES (?)");
-        insertQuery.addBindValue(nombre);
-        if (!insertQuery.exec()) {
-            QMessageBox::warning(this, "Error BD", "No se pudo crear empresa: " + insertQuery.lastError().text());
-            return;
-        }
-
-        cargarLista();
-        QMessageBox::information(this, "Empresa creada", "Empresa '" + nombre + "' creada correctamente.");
-    }
-}
-
-
-void EmpresaForm::onBorrarClicked()
-{
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Seleccionar empresa", "Debes seleccionar una empresa para borrar.");
+    QModelIndexList seleccion = ui->tableViewEmpresas->selectionModel()->selectedRows();
+    if (seleccion.count() != 1) {
+        QMessageBox::warning(this, tr("Editar Empresa"), tr("Seleccione una empresa para editar"));
         return;
     }
 
-    QString nombre = item->text();
+    int fila = seleccion.at(0).row();
 
-    if (QMessageBox::question(this, "Confirmar borrado",
-                              "¿Seguro que quieres borrar la empresa '" + nombre + "'?") == QMessageBox::Yes) {
-        delete item;
-        guardarLista();
-        QMessageBox::information(this, "Empresa borrada", "Empresa '" + nombre + "' borrada correctamente.");
-    }
-}
-
-void EmpresaForm::onEditarClicked()
-{
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Seleccionar empresa", "Debes seleccionar una empresa para editar.");
+    if (fila < 0 || fila >= listaEmpresas.size()) {
+        QMessageBox::critical(this, tr("Error"), tr("Selección inválida"));
         return;
     }
 
-    bool ok;
-    QString nombreActual = item->text();
-    QString nombreNuevo = QInputDialog::getText(this, tr("Editar Empresa"),
-                                                tr("Nuevo nombre:"), QLineEdit::Normal,
-                                                nombreActual, &ok);
-    if (ok && !nombreNuevo.isEmpty()) {
-        for (int i = 0; i < ui->listWidget->count(); ++i) {
-            QListWidgetItem *otherItem = ui->listWidget->item(i);
-            if (otherItem != item && otherItem->text().compare(nombreNuevo, Qt::CaseInsensitive) == 0) {
-                QMessageBox::warning(this, "Nombre duplicado", "Ya existe una empresa con ese nombre.");
-                return;
-            }
-        }
+    QVariantMap empresa = listaEmpresas.at(fila);
+    QString nuevoNombre = ui->lineEditNombre->text().trimmed();
 
-        item->setText(nombreNuevo);
-        guardarLista();
-        QMessageBox::information(this, "Empresa editada", "Empresa renombrada correctamente.");
-    }
-}
-
-void EmpresaForm::onDeptClicked()
-{
-    QListWidgetItem *item = ui->listWidget->currentItem();
-    if (!item) {
-        QMessageBox::warning(this, "Seleccionar empresa", "Debes seleccionar una empresa para añadir departamento.");
+    if (nuevoNombre.isEmpty()) {
+        QMessageBox::warning(this, tr("Error"), tr("El nombre no puede estar vacío"));
         return;
     }
 
-    bool ok;
-    QString departamento = QInputDialog::getText(this, tr("Agregar Departamento"),
-                                                 tr("Nombre del departamento:"), QLineEdit::Normal,
-                                                 "", &ok);
-    if (ok && !departamento.isEmpty()) {
-        QMessageBox::information(this, "Departamento añadido",
-                                 "Departamento '" + departamento + "' añadido a la empresa '" + item->text() + "'.");
+    empresa["nombre"] = nuevoNombre;
+
+    QString errorMsg;
+    if (!dao.actualizarEmpresa(empresa, errorMsg)) {
+        QMessageBox::critical(this, tr("Error al editar"), errorMsg);
+        return;
     }
+
+    cargarEmpresas();
+    limpiarFormulario();
+}
+
+void EmpresaForm::on_btnBorrar_clicked()
+{
+    QModelIndexList seleccion = ui->tableViewEmpresas->selectionModel()->selectedRows();
+    if (seleccion.count() != 1) {
+        QMessageBox::warning(this, tr("Borrar Empresa"), tr("Seleccione una empresa para borrar"));
+        return;
+    }
+
+    int fila = seleccion.at(0).row();
+
+    if (fila < 0 || fila >= listaEmpresas.size()) {
+        QMessageBox::critical(this, tr("Error"), tr("Selección inválida"));
+        return;
+    }
+
+    int id = listaEmpresas.at(fila).value("id").toInt();
+
+    QString errorMsg;
+    if (!dao.eliminarEmpresa(id, errorMsg)) {
+        QMessageBox::critical(this, tr("Error al borrar"), errorMsg);
+        return;
+    }
+
+    cargarEmpresas();
+    limpiarFormulario();
 }

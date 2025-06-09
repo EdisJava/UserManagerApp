@@ -1,23 +1,35 @@
+// database.cpp
 #include "database.h"
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlError>
+#include <QSqlError>
 #include <QDebug>
 
 QSqlDatabase database::db = QSqlDatabase();
 
-bool database::connect(const QString &dbPath){
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(dbPath);
-
-    if (!db.open()) {
-        qDebug() << "Error opening database:" << db.lastError().text();
-        return false;
+QSqlDatabase& database::get()
+{
+    if (!db.isValid()) {
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        // Ruta absoluta correcta y con barra normal para Windows
+        db.setDatabaseName("C:/Users/AEPRACINFO-5/Documents/UserMannagmentApp/UserMannagmentApp/UserMannagmentApp.db");
     }
+    return db;
+}
 
-    qDebug() << "Database successfully connected.";
+bool database::open()
+{
+    QSqlDatabase &dbInstance = get();
+    if (!dbInstance.isOpen()) {
+        if (!dbInstance.open()) {
+            qDebug() << "Error al abrir base de datos:" << dbInstance.lastError().text();
+            return false;
+        }
+    }
     return true;
 }
 
-QSqlDatabase& database::get() {
-    return db;
+void database::close()
+{
+    if (db.isOpen()) {
+        db.close();
+    }
 }

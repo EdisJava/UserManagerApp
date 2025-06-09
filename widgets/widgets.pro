@@ -14,7 +14,8 @@ SOURCES += \
     mainadmi.cpp \
     mainwindow.cpp \
     userform.cpp \
-    users.cpp
+    users.cpp \
+    ../models/usuario.cpp
 
 HEADERS += \
     admicompany.h \
@@ -24,7 +25,8 @@ HEADERS += \
     mainadmi.h \
     mainwindow.h \
     userform.h \
-    users.h
+    users.h \
+     ../models/usuario.h
 
 FORMS += \
     admicompany.ui \

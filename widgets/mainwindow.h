@@ -2,83 +2,56 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QDebug>
-#include <QMessageBox>
+#include "UsuarioDAO.h"
+#include "DepartamentoDAO.h"
 
-#include "../models/usuario.h"    // Asumo que tienes esta clase definida
-#include "guess.h"      // Widget donde mostrarás datos usuario
-#include "ui_mainadmi.h"
-#include "admicompany.h"
-#include "empresaform.h"
-#include "dptoform.h"
-#include "users.h"
+class EmpresaForm;
+class DptoForm;
+class UserForm;
+class Guess;
+class MainAdmi;
+class AdmiCompany;
+class Users;
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
-
-enum RolUsuario {
-    ADMIN_TOTAL,
-    ADMIN_EMPRESA,
-    USUARIO_ESTANDAR,
-    ROL_INVALIDO
-};
-
-enum EstadoValidacionUsuario {
-    EXISTE_Y_VALIDO,
-    INACTIVO_O_SUSPENDIDO,
-    NO_EXISTE
-};
-
-struct ResultadoValidacion {
-    EstadoValidacionUsuario estado;
-    RolUsuario rol;
-};
+namespace Ui {
+class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void onbtnEntrarClicked();
-    void onBtnAdminEmpresaClicked();
-    void onBtnAdminDepartamentosClicked();
-    void onBtnAdminTrabajadoresClicked();
-    void onBtnAdminCompanyClicked();
+    void on_btnEntrar_clicked();
+    void on_actionSalir_triggered();
+    void on_actionAcerca_de_triggered();
+
+    void abrirGestionEmpresas();
+    void abrirGestionDepartamentos();
+    void abrirGestionUsuarios();
 
 private:
+    void mostrarMensaje(const QString &mensaje);
+    bool validarDNI(const QString &dni);
+QString empresaDelAdminEmpresa;
     Ui::MainWindow *ui;
-    QSqlDatabase db;
 
-    Ui::MainAdmi *adminTotalFormUi = nullptr;
-    Guess *guessWidget = nullptr;
+    AdmiCompany *admiCompany = nullptr;
+    EmpresaForm *empresaForm = nullptr;
+    DptoForm *dptoForm = nullptr;
+    UserForm *userForm = nullptr;  // Aquí usersForm es UserForm (individual)
+    Users *usersWindow = nullptr;   // Aquí usersWindow es la ventana lista de usuarios
 
-    EmpresaForm *empresaWindow = nullptr;
-    DptoForm *dptoWindow = nullptr;
-    Users *Userwindow = nullptr;
-    admicompany* adminCompanyWidget = nullptr;
+    Guess *guessForm = nullptr;
+    MainAdmi *mainAdmi = nullptr;
 
-    QString empresaAdmin;
+    DepartamentoDAO *departamentoDAO = nullptr;
 
-    RolUsuario obtenerRolUsuario(const QString &nombreUsuario);
-    usuario cargarUsuarioPorNombre(const QString &nombreUsuario);
-
-    void mostrarDatosUsuarioEnGuess(const usuario &usuario);
-    void mostrarPestanaSegunRol(RolUsuario rol);
-
-    QString obtenerRutaFotoUsuario(const QString &dni);
-    QString obtenerNombreDepartamento(int departamentoId);
-    QString nombreUsuario;   // guarda el nombre introducido
-    ResultadoValidacion validarUsuario(const QString &nombreUsuario);
-
-
+    UsuarioDAO usuarioDAO;
 };
 
 #endif // MAINWINDOW_H

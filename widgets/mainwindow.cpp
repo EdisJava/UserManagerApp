@@ -1,271 +1,342 @@
 #include "mainwindow.h"
-#include "empresaform.h"
 #include "ui_mainwindow.h"
+
+#include "EmpresaForm.h"
+#include "DptoForm.h"
+#include "userform.h"
+#include "Users.h"
+#include "Guess.h"
+#include "mainadmi.h"
+#include "DepartamentoDAO.h"
+#include "database.h"
+#include "admicompany.h"
+#include "../Database/usuarioDAO.h"
+
 #include <QMessageBox>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QPixmap>
 #include <QDebug>
-#include "ui_mainadmi.h"
-#include "admicompany.h"  // Incluye aquí la cabecera de AdminCompany
 #include <QVBoxLayout>
-#include <QSqlDatabase>
-#include "guess.h"
+#include <QApplication>
 
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
+// Constructor de la ventana principal
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
     ui(new Ui::MainWindow),
-
-    guessWidget(new Guess(this)),
-    empresaWindow(nullptr),
-    dptoWindow(nullptr),
-    Userwindow(nullptr),
-    adminCompanyWidget(nullptr)
+    admiCompany(nullptr),
+    empresaForm(nullptr),
+    dptoForm(nullptr),
+    userForm(nullptr),
+    usersWindow(nullptr),
+    guessForm(nullptr),
+    mainAdmi(nullptr),
+    departamentoDAO(new DepartamentoDAO)
 {
     ui->setupUi(this);
 
-    db = QSqlDatabase::database();
-    if (!db.isOpen()) {
-        QMessageBox::critical(this, "Error", "La base de datos no está abierta.");
+    // Intentar abrir la base de datos
+    if (!database::open()) {
+        QMessageBox::critical(this, tr("Error"), tr("No se pudo conectar a la base de datos."));
+        qApp->quit();
         return;
     }
 
-    // Configurar AdminTotal UI en la pestaña 1 (ya hecho)
-    QWidget *adminTotalWidget = new QWidget(ui->tabWidget->widget(1));
-    adminTotalFormUi = new Ui::MainAdmi();
-    adminTotalFormUi->setupUi(adminTotalWidget);
-    QVBoxLayout *layout1 = new QVBoxLayout(ui->tabWidget->widget(1));
-    layout1->addWidget(adminTotalWidget);
-    ui->tabWidget->widget(1)->setLayout(layout1);
-
-    QWidget *tab3 = ui->tabWidget->widget(3);
-    QVBoxLayout *layout3 = new QVBoxLayout(tab3);
-    layout3->addWidget(guessWidget);
-    tab3->setLayout(layout3);
-
-    // Ahora agrega admicompany embebido en la pestaña 2
- // padre es el widget de la pestaña 2
- /*   QVBoxLayout *layout2 = new QVBoxLayout(ui->tabWidget->widget(2));
-    layout2->addWidget(adminCompanyWidget);
-    ui->tabWidget->widget(2)->setLayout(layout2);*/
-
-    // Deshabilitar todas las pestañas excepto login inicialmente
-    for (int i = 1; i < ui->tabWidget->count(); ++i) {
-        ui->tabWidget->setTabEnabled(i, false);
+    // Solo habilita la pestaña de login al inicio
+    if (ui->tabWidget) {
+        for (int i = 1; i < ui->tabWidget->count(); ++i)
+            ui->tabWidget->setTabEnabled(i, false);
+        ui->tabWidget->setCurrentIndex(0);
     }
-    ui->tabWidget->setCurrentIndex(0);
 
-    // Conexiones botón Entrar y demás
-    connect(ui->btnEntrar, &QPushButton::clicked, this, &MainWindow::onbtnEntrarClicked);
-
-    connect(adminTotalFormUi->btnDepartamentos, &QPushButton::clicked, this, &MainWindow::onBtnAdminDepartamentosClicked);
-    connect(adminTotalFormUi->btnEmpresas, &QPushButton::clicked, this, &MainWindow::onBtnAdminEmpresaClicked);
-    connect(adminTotalFormUi->btnUsuarios, &QPushButton::clicked, this, &MainWindow::onBtnAdminTrabajadoresClicked);
+    // Conectar botón de entrar con su handler
+    connect(ui->btnEntrar, &QPushButton::clicked, this, &MainWindow::on_btnEntrar_clicked);
 }
 
+// Destructor de la ventana principal
 MainWindow::~MainWindow()
 {
-    if (db.isOpen())
-        db.close();
-
+    // Liberar memoria de los formularios abiertos
+    delete empresaForm;
+    delete dptoForm;
+    delete userForm;
+    delete usersWindow;
+    delete guessForm;
+    delete mainAdmi;
+    delete admiCompany;
+    delete departamentoDAO;
     delete ui;
+
+    // Cerrar conexión a base de datos
+    database::close();
 }
 
-RolUsuario MainWindow::obtenerRolUsuario(const QString &nombreUsuario)
+// Método llamado al hacer clic en el botón "Entrar"
+void MainWindow::on_btnEntrar_clicked()
 {
-    if (nombreUsuario.toLower() == "admin") {
-        return ADMIN_TOTAL;  // usuario especial hardcodeado
+    QString usuario = ui->lineEditUsuario->text().trimmed();
+
+    // Validación básica: campo vacío
+    if (usuario.isEmpty()) {
+        mostrarMensaje("Por favor, introduzca un nombre de usuario.");
+        return;
     }
 
+    // Asegurar que la BD esté abierta
+    QSqlDatabase &db = database::get();
+    if (!db.isOpen() && !database::open()) {
+        mostrarMensaje("Error al abrir la base de datos.");
+        return;
+    }
+
+    // Caso especial para el usuario "admin" global
+    if (usuario.toLower() == "admin") {
+        if (!mainAdmi) {
+            mainAdmi = new MainAdmi(this);
+            QWidget *tabAdmin = ui->tabWidget->widget(1);
+            if (tabAdmin->layout()) {
+                tabAdmin->layout()->addWidget(mainAdmi);
+            } else {
+                QVBoxLayout *layout = new QVBoxLayout(tabAdmin);
+                layout->addWidget(mainAdmi);
+                tabAdmin->setLayout(layout);
+            }
+        }
+
+        // Deshabilitar otras pestañas, mostrar la de admin
+        for (int i = 0; i < ui->tabWidget->count(); ++i)
+            ui->tabWidget->setTabEnabled(i, false);
+
+        ui->tabWidget->setTabEnabled(1, true);
+        ui->tabWidget->setCurrentIndex(1);
+
+        mostrarMensaje("Bienvenido administrador total.");
+        ui->lineEditUsuario->clear();
+        return;
+    }
+
+    // Consultar rol y estado del usuario desde la base de datos
     QSqlQuery query(db);
-    query.prepare("SELECT rol, empresa, estado FROM usuarios WHERE LOWER(nombre) = :nombre");
-    query.bindValue(":nombre", nombreUsuario.toLower());
+    query.prepare("SELECT rol, estado FROM usuarios WHERE nombre = ?");
+    query.bindValue(0, usuario);
 
-    if (!query.exec()) {
-        qDebug() << "Error en la consulta de rol:" << query.lastError().text();
-        return ROL_INVALIDO;
-    }
-
-    if (query.next()) {
-        QString rol = query.value(0).toString().toLower();
-        empresaAdmin = query.value(1).toString();
-        QString estado = query.value(2).toString().toLower();
-
-        // Verificar si está inactivo o suspendido
-        if (estado == "inactivo" || estado == "suspendido") {
-            QMessageBox::warning(nullptr, "Acceso denegado", "Tu cuenta está " + estado + ". No puedes acceder al sistema.");
-            return ROL_INVALIDO;
-        }
-
-        if (rol == "admintotal") return ADMIN_TOTAL;
-        else if (rol == "adminempresa") return ADMIN_EMPRESA;
-        else if (rol == "usuario") return USUARIO_ESTANDAR;
-    }
-
-    return ROL_INVALIDO;
-}
-
-
-void MainWindow::onbtnEntrarClicked()
-{
-    QString nombre = ui->lineEditUsuario->text().trimmed();
-    qDebug() << "Botón Entrar pulsado. Usuario:" << nombre;
-
-    if (nombre.isEmpty()) {
-        QMessageBox::warning(this, "Campo vacío", "Introduce un nombre de usuario.");
+    if (!query.exec() || !query.next()) {
+        mostrarMensaje("Usuario no encontrado.");
         return;
     }
-    nombreUsuario = ui->lineEditUsuario->text().trimmed();
-    ResultadoValidacion resultado = validarUsuario(nombre);
 
-    switch (resultado.estado) {
-    case NO_EXISTE:
-        QMessageBox::critical(this, "Error", QString("El usuario \"%1\" no existe.").arg(nombre));
-        return;
+    QString rol = query.value(0).toString().toLower();
+    QString estado = query.value(1).toString().toLower();
 
-    case INACTIVO_O_SUSPENDIDO:
-        QMessageBox::warning(this, "Acceso denegado", "Tu cuenta está inactiva o suspendida. Contacta con un administrador.");
-        return;
-
-    case EXISTE_Y_VALIDO:
-        mostrarPestanaSegunRol(resultado.rol);
+    if (estado != "activo") {
+        mostrarMensaje("Usuario inactivo. No puede iniciar sesión.");
         return;
     }
-}
 
+    // Obtener todos los datos del usuario
+    QSqlQuery queryDatos(db);
+    queryDatos.prepare("SELECT dni, nombre, telefono, email, departamento, empresa, estado, rol, foto FROM usuarios WHERE nombre = ?");
+    queryDatos.bindValue(0, usuario);
 
-void MainWindow::mostrarPestanaSegunRol(RolUsuario rol)
-{
-    int indice = 0;
-    QString titulo;
+    if (!queryDatos.exec() || !queryDatos.next()) {
+        mostrarMensaje("Error al cargar datos del usuario.");
+        return;
+    }
 
-    switch (rol) {
-    case ADMIN_TOTAL:
-        indice = 1;
-        titulo = QString("Bienvenido, %1 (Administrador Total)").arg(nombreUsuario);
-        break;
+    // Validar DNI antes de continuar
+    QString dni = queryDatos.value("dni").toString();
+    if (!validarDNI(dni)) {
+        mostrarMensaje("El DNI del usuario no es válido.");
+        return;
+    }
 
-    case ADMIN_EMPRESA:
-        indice = 2;
+    // Cargar el resto de los datos
+    QString nombre = queryDatos.value("nombre").toString();
+    QString telefono = queryDatos.value("telefono").toString();
+    QString email = queryDatos.value("email").toString();
+    QString departamento = queryDatos.value("departamento").toString();
+    QString empresa = queryDatos.value("empresa").toString();
+    empresaDelAdminEmpresa = empresa;
+    QString estadoUsr = queryDatos.value("estado").toString();
+    QString rolUsr = queryDatos.value("rol").toString();
 
-        if (!adminCompanyWidget) {
-            adminCompanyWidget = new admicompany(empresaAdmin, this);
+    QPixmap foto;
+    auto fotoData = queryDatos.value("foto").toString();
+    if (!fotoData.isEmpty())
+        foto.load(fotoData);
 
-            QVBoxLayout *layout2 = new QVBoxLayout(ui->tabWidget->widget(2));
-            layout2->addWidget(adminCompanyWidget);
-            ui->tabWidget->widget(2)->setLayout(layout2);
+    // Construir mapa de datos del usuario
+    QVariantMap usuarioData;
+    usuarioData["dni"] = dni;
+    usuarioData["nombre"] = nombre;
+    usuarioData["telefono"] = telefono;
+    usuarioData["email"] = email;
+    usuarioData["departamento"] = departamento;
+    usuarioData["empresa"] = empresa;
+    usuarioData["estado"] = estadoUsr;
+    usuarioData["rol"] = rolUsr;
+    usuarioData["foto"] = foto;
+
+    // Determinar qué tipo de formulario mostrar según el rol
+    if (rol == "admin") {
+        if (!userForm) {
+            userForm = new UserForm(&usuarioDAO, this);
+            QWidget *tabAdmin = ui->tabWidget->widget(1);
+            QLayout *layout = tabAdmin->layout();
+            if (!layout) {
+                layout = new QVBoxLayout(tabAdmin);
+                tabAdmin->setLayout(layout);
+            }
+            if (layout->indexOf(userForm) == -1) {
+                layout->addWidget(userForm);
+            }
         }
 
-        titulo = QString("Bienvenido, %1 (Admin de %2)").arg(nombreUsuario, empresaAdmin);
-        break;
+        // Validar visualmente el DNI (campo rojo si es inválido)
+        userForm->validarVisualmenteDNI(dni);
 
-    case USUARIO_ESTANDAR:
-        indice = 3;
-        titulo = QString("Bienvenido, %1 (Usuario)").arg(nombreUsuario);
+        // Mostrar pestaña correspondiente
+        for (int i = 0; i < ui->tabWidget->count(); ++i)
+            ui->tabWidget->setTabEnabled(i, false);
 
-        if (guessWidget) {
-            guessWidget->cargarDatosUsuario(nombreUsuario);  // <-- Aquí
+        ui->tabWidget->setTabEnabled(1, true);
+        ui->tabWidget->setCurrentIndex(1);
+
+        ui->lineEditUsuario->clear();
+        return;
+    }
+    else if (rol == "adminempresa") {
+        QWidget *tabAdminEmp = ui->tabWidget->widget(2);
+
+        if (!admiCompany) {
+            admiCompany = new AdmiCompany(this);
+            if (tabAdminEmp->layout()) {
+                tabAdminEmp->layout()->addWidget(admiCompany);
+            } else {
+                QVBoxLayout *layout = new QVBoxLayout(tabAdminEmp);
+                layout->addWidget(admiCompany);
+                tabAdminEmp->setLayout(layout);
+            }
+
+            // Conexión de señal para gestión de usuarios
+            connect(admiCompany, &AdmiCompany::gestionarUsuariosSolicitado, this, &MainWindow::abrirGestionUsuarios);
         }
 
-        break;
+        // Mostrar pestaña de admin de empresa
+        admiCompany->show();
+        for (int i = 0; i < ui->tabWidget->count(); ++i)
+            ui->tabWidget->setTabEnabled(i, false);
+        ui->tabWidget->setTabEnabled(2, true);
+        ui->tabWidget->setCurrentIndex(2);
 
-    default:
-        indice = 0;
-        break;
+        ui->lineEditUsuario->clear();
     }
-
-    for (int i = 0; i < ui->tabWidget->count(); ++i) {
-        ui->tabWidget->setTabEnabled(i, i == indice);
-    }
-
-    ui->tabWidget->setCurrentIndex(indice);
-    this->setWindowTitle(titulo);  // <- Actualiza el título con los datos
-}
-
-
-// Slots para los botones, cada uno con su código
-
-void MainWindow::onBtnAdminEmpresaClicked()
-{
-    if (!empresaWindow) {
-        empresaWindow = new EmpresaForm(this);
-    }
-    empresaWindow->show();
-    empresaWindow->raise();
-    empresaWindow->activateWindow();
-}
-
-void MainWindow::onBtnAdminDepartamentosClicked()
-{
-    if (!dptoWindow) {
-        dptoWindow = new DptoForm(this);
-    }
-    dptoWindow->show();
-    dptoWindow->raise();
-    dptoWindow->activateWindow();
-}
-
-void MainWindow::onBtnAdminTrabajadoresClicked()
-{
-    if (!Userwindow) {
-        Userwindow = new Users(this);
-    }
-    Userwindow->show();
-    Userwindow->raise();
-    Userwindow->activateWindow();
-}
-
-// Ejemplo para botón de AdminCompany si quieres mostrar ventana:
-
-void MainWindow::onBtnAdminCompanyClicked()
-{
-    if (!adminCompanyWidget) {
-        adminCompanyWidget = new admicompany(empresaAdmin, this);  // <-- Aquí la corrección
-    }
-    adminCompanyWidget->show();
-    adminCompanyWidget->raise();
-    adminCompanyWidget->activateWindow();
-}
-
-ResultadoValidacion MainWindow::validarUsuario(const QString &nombreUsuario)
-{
-    ResultadoValidacion resultado;
-    resultado.rol = ROL_INVALIDO;
-
-    if (nombreUsuario.toLower() == "admin") {
-        resultado.estado = EXISTE_Y_VALIDO;
-        resultado.rol = ADMIN_TOTAL;
-        return resultado;
-    }
-
-    QSqlQuery query(db);
-    query.prepare("SELECT rol, empresa, estado FROM usuarios WHERE LOWER(nombre) = :nombre");
-    query.bindValue(":nombre", nombreUsuario.toLower());
-
-    if (!query.exec()) {
-        qDebug() << "Error en la consulta de rol:" << query.lastError().text();
-        resultado.estado = NO_EXISTE;
-        return resultado;
-    }
-
-    if (query.next()) {
-        QString rol = query.value(0).toString().toLower();
-        empresaAdmin = query.value(1).toString();
-        QString estado = query.value(2).toString().toLower();
-
-        if (estado == "inactivo" || estado == "suspendido") {
-            resultado.estado = INACTIVO_O_SUSPENDIDO;
-            return resultado;
+    else if (rol == "usuario") {
+        if (!guessForm) {
+            guessForm = new Guess(this);
+            QWidget *tabUsuario = ui->tabWidget->widget(3);
+            if (tabUsuario->layout()) {
+                tabUsuario->layout()->addWidget(guessForm);
+            } else {
+                QVBoxLayout *layout = new QVBoxLayout(tabUsuario);
+                layout->addWidget(guessForm);
+                tabUsuario->setLayout(layout);
+            }
         }
 
-        resultado.estado = EXISTE_Y_VALIDO;
-        if (rol == "admintotal") resultado.rol = ADMIN_TOTAL;
-        else if (rol == "adminempresa") resultado.rol = ADMIN_EMPRESA;
-        else if (rol == "usuario") resultado.rol = USUARIO_ESTANDAR;
+        // Mostrar formulario del usuario estándar
+        guessForm->mostrarDatos(dni, nombre, telefono, email, departamento, empresa, estadoUsr, rolUsr, foto);
 
-        return resultado;
+        for (int i = 0; i < ui->tabWidget->count(); ++i)
+            ui->tabWidget->setTabEnabled(i, false);
+        ui->tabWidget->setTabEnabled(3, true);
+        ui->tabWidget->setCurrentIndex(3);
+        guessForm->show();
+    }
+    else {
+        // Rol no reconocido
+        mostrarMensaje("Rol no válido.");
+        return;
     }
 
-    resultado.estado = NO_EXISTE;
-    return resultado;
+    // Una vez logueado, ocultar pestaña de login
+    ui->tabWidget->setTabEnabled(0, false);
+    ui->lineEditUsuario->clear();
+}
+
+// Mostrar un mensaje en la barra de estado durante 5 segundos
+void MainWindow::mostrarMensaje(const QString &mensaje)
+{
+    if (statusBar())
+        statusBar()->showMessage(mensaje, 5000);
+}
+
+// Abre el formulario de gestión de empresas
+void MainWindow::abrirGestionEmpresas()
+{
+    if (!empresaForm)
+        empresaForm = new EmpresaForm(this);
+
+    empresaForm->setModal(true);
+    empresaForm->show();
+    empresaForm->raise();
+    empresaForm->activateWindow();
+}
+
+// Abre el formulario de gestión de departamentos
+void MainWindow::abrirGestionDepartamentos()
+{
+    if (!dptoForm)
+        dptoForm = new DptoForm(departamentoDAO, this);
+
+    dptoForm->setModal(true);
+    dptoForm->show();
+    dptoForm->raise();
+    dptoForm->activateWindow();
+}
+
+// Abre el formulario de gestión de usuarios
+void MainWindow::abrirGestionUsuarios()
+{
+    if (!usersWindow) {
+        usersWindow = new Users(this);
+        usersWindow->setWindowModality(Qt::ApplicationModal);
+    }
+
+    usersWindow->setEmpresaFiltro(empresaDelAdminEmpresa); // Usa la empresa del admin empresa
+    usersWindow->show();
+    usersWindow->raise();
+    usersWindow->activateWindow();
+}
+
+// Acción del menú para salir de la aplicación
+void MainWindow::on_actionSalir_triggered()
+{
+    qApp->quit();
+}
+
+// Acción del menú "Acerca de"
+void MainWindow::on_actionAcerca_de_triggered()
+{
+    QMessageBox::information(this, tr("Acerca de"), tr("Aplicación de ejemplo\nDesarrollada con Qt."));
+}
+
+// Función para validar que un DNI sea correcto
+bool MainWindow::validarDNI(const QString &dni)
+{
+    if (dni.length() != 9)
+        return false;
+
+    QString numeros = dni.left(8);
+    QChar letra = dni.at(8).toUpper();
+
+    bool ok;
+    int num = numeros.toInt(&ok);
+    if (!ok)
+        return false;
+
+    static const QString letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+    int pos = num % 23;
+
+    return letra == letras.at(pos);
 }

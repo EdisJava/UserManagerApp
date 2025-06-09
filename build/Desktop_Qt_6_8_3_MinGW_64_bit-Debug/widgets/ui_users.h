@@ -11,56 +11,64 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QDialog>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QWidget>
+#include <QtWidgets/QVBoxLayout>
 
 QT_BEGIN_NAMESPACE
 
 class Ui_Users
 {
 public:
+    QVBoxLayout *verticalLayout;
     QListWidget *listWidget;
     QLabel *labelFoto;
-    QWidget *widget;
     QHBoxLayout *buttonLayout;
+    QPushButton *btnNuevoUsuario;
     QPushButton *btnEditUser;
-    QPushButton *btnAddUser;
     QPushButton *btnDeleteUser;
 
-    void setupUi(QWidget *Users)
+    void setupUi(QDialog *Users)
     {
         if (Users->objectName().isEmpty())
             Users->setObjectName("Users");
-        Users->resize(480, 320);
+        verticalLayout = new QVBoxLayout(Users);
+        verticalLayout->setObjectName("verticalLayout");
         listWidget = new QListWidget(Users);
         listWidget->setObjectName("listWidget");
-        listWidget->setGeometry(QRect(9, 9, 281, 192));
+
+        verticalLayout->addWidget(listWidget);
+
         labelFoto = new QLabel(Users);
         labelFoto->setObjectName("labelFoto");
-        labelFoto->setGeometry(QRect(310, 10, 141, 181));
-        widget = new QWidget(Users);
-        widget->setObjectName("widget");
-        widget->setGeometry(QRect(10, 210, 282, 26));
-        buttonLayout = new QHBoxLayout(widget);
+        labelFoto->setMinimumSize(QSize(200, 200));
+        labelFoto->setFrameShape(QFrame::Box);
+        labelFoto->setAlignment(Qt::AlignCenter);
+
+        verticalLayout->addWidget(labelFoto);
+
+        buttonLayout = new QHBoxLayout();
         buttonLayout->setObjectName("buttonLayout");
-        buttonLayout->setContentsMargins(0, 0, 0, 0);
-        btnEditUser = new QPushButton(widget);
+        btnNuevoUsuario = new QPushButton(Users);
+        btnNuevoUsuario->setObjectName("btnNuevoUsuario");
+
+        buttonLayout->addWidget(btnNuevoUsuario);
+
+        btnEditUser = new QPushButton(Users);
         btnEditUser->setObjectName("btnEditUser");
 
         buttonLayout->addWidget(btnEditUser);
 
-        btnAddUser = new QPushButton(widget);
-        btnAddUser->setObjectName("btnAddUser");
-
-        buttonLayout->addWidget(btnAddUser);
-
-        btnDeleteUser = new QPushButton(widget);
+        btnDeleteUser = new QPushButton(Users);
         btnDeleteUser->setObjectName("btnDeleteUser");
 
         buttonLayout->addWidget(btnDeleteUser);
+
+
+        verticalLayout->addLayout(buttonLayout);
 
 
         retranslateUi(Users);
@@ -68,12 +76,11 @@ public:
         QMetaObject::connectSlotsByName(Users);
     } // setupUi
 
-    void retranslateUi(QWidget *Users)
+    void retranslateUi(QDialog *Users)
     {
         Users->setWindowTitle(QCoreApplication::translate("Users", "Gesti\303\263n de Usuarios", nullptr));
-        labelFoto->setText(QCoreApplication::translate("Users", "TextLabel", nullptr));
+        btnNuevoUsuario->setText(QCoreApplication::translate("Users", "Nuevo Usuario", nullptr));
         btnEditUser->setText(QCoreApplication::translate("Users", "Editar Usuario", nullptr));
-        btnAddUser->setText(QCoreApplication::translate("Users", "Agregar Usuario", nullptr));
         btnDeleteUser->setText(QCoreApplication::translate("Users", "Eliminar Usuario", nullptr));
     } // retranslateUi
 

@@ -1,62 +1,56 @@
-#include "mainadmi.h"
+#include "MainAdmi.h"
 #include "ui_MainAdmi.h"
-#include <QMessageBox>
-
-#include "empresaForm.h"
-#include "dptoform.h"
-#include "userform.h"
-#include "users.h"
-
-#include <QDebug>
 
 MainAdmi::MainAdmi(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MainAdmi)
+    ui(new Ui::MainAdmi),
+    users(nullptr),
+    empresaForm(nullptr),
+    dptoForm(nullptr),
+    departamentoDAO()  // <-- inicializas el atributo, no la clase
 {
     ui->setupUi(this);
 
-    connect(ui->btnEmpresas, &QPushButton::clicked, this, &MainAdmi::on_btnEmpresas_clicked);
-    connect(ui->btnDepartamentos, &QPushButton::clicked, this, &MainAdmi::on_btnDepartamentos_clicked);
-    connect(ui->btnUsuarios, &QPushButton::clicked, this, &MainAdmi::on_btnUsuarios_clicked);
+    connect(ui->btnGestionUsuarios, &QPushButton::clicked, this, &MainAdmi::abrirGestionUsuarios);
+    connect(ui->btnGestionEmpresas, &QPushButton::clicked, this, &MainAdmi::abrirGestionEmpresas);
+    connect(ui->btnGestionDepartamentos, &QPushButton::clicked, this, &MainAdmi::abrirGestionDepartamentos);
 }
 
 MainAdmi::~MainAdmi()
 {
+    delete users;
+    delete empresaForm;
+    delete dptoForm;
     delete ui;
 }
 
-void MainAdmi::on_btnEmpresas_clicked()
+void MainAdmi::abrirGestionUsuarios()
 {
-    EmpresaForm *form = new EmpresaForm(this);
-    connect(form, &EmpresaForm::empresaGuardada, this, [](const QString &nombre){
-        QMessageBox::information(nullptr, "Éxito", "Empresa guardada: " + nombre);
-    });
-    form->setAttribute(Qt::WA_DeleteOnClose);
-    form->show();
-}
-
-void MainAdmi::on_btnDepartamentos_clicked()
-{
-    DptoForm *form = new DptoForm(this);
-    connect(form, &DptoForm::departamentoGuardado, this, [](const QString &nombre){
-        QMessageBox::information(nullptr, "Éxito", "Departamento guardado: " + nombre);
-    });
-    form->setAttribute(Qt::WA_DeleteOnClose);
-    form->show();
-}
-
-void MainAdmi::on_btnUsuarios_clicked()
-{
-    if (!usersWidget) {
-        usersWidget = new Users(this);
-        usersWidget->setAttribute(Qt::WA_DeleteOnClose);
-        connect(usersWidget, &QObject::destroyed, this, [this]() {
-            usersWidget = nullptr;
-        });
+    if (!users) {
+        users = new Users(this);  // 'this' es un QWidget*
     }
-    usersWidget->show();
-    usersWidget->raise();
-    usersWidget->activateWindow();
+    users->show();
+    users->raise();
+    users->activateWindow();
 }
 
+void MainAdmi::abrirGestionEmpresas()
+{
+    if (!empresaForm) {
+        empresaForm = new EmpresaForm(this);
+    }
+    empresaForm->show();
+    empresaForm->raise();
+    empresaForm->activateWindow();
+}
 
+void MainAdmi::abrirGestionDepartamentos()
+{
+    if (!dptoForm) {
+        dptoForm = new DptoForm(&departamentoDAO, this);
+
+    }
+    dptoForm->show();
+    dptoForm->raise();
+    dptoForm->activateWindow();
+}

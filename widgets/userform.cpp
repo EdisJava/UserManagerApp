@@ -1,211 +1,229 @@
-#include "userform.h"
-#include "ui_userform.h"
+#include "UserForm.h"
+#include "ui_UserForm.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QSqlQuery>
-#include <QSqlError>
-#include <QDebug>
+#include <QPixmap>
+#include <QFileInfo>
+#include <QDir>
+#include <QFrame>
+#include <QPalette>
 
-UserForm::UserForm(QWidget *parent) :
+// Constructor del formulario de usuario
+UserForm::UserForm(UsuarioDAO* dao, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::UserForm),
-    modoEdicion(false)
+    dao(dao)  // Se guarda el puntero al DAO para acceder a métodos externos
 {
     ui->setupUi(this);
-      cargarListasDesdeBD();
+
+    // Cargar opciones de departamentos y empresas desde la BD
+    cargarDepartamentosYEmpresas();
+
+    // Añadir roles disponibles al comboBox con su valor interno
+    ui->comboBoxRol->addItem("Admin Total", "admin");
+    ui->comboBoxRol->addItem("Admin de Empresa", "adminempresa");
+    ui->comboBoxRol->addItem("Usuario Estándar", "usuario");
+
+    // Añadir estados posibles
+    ui->comboBoxEstado->addItem("Activo", "activo");
+    ui->comboBoxEstado->addItem("Inactivo", "inactivo");
+    ui->comboBoxEstado->addItem("Suspendido", "suspendido");
+
+    // Configurar etiqueta de previsualización de imagen
+    ui->labelPreviewImage->setText("Previsualización");
+    ui->labelPreviewImage->setAlignment(Qt::AlignCenter);
+    ui->labelPreviewImage->setFrameShape(QFrame::Box);
+
+    // Validación visual del DNI a medida que se escribe
+    connect(ui->lineEditDni, &QLineEdit::textChanged, this, &UserForm::validarVisualmenteDNI);
 }
 
+// Destructor
 UserForm::~UserForm()
 {
     delete ui;
 }
 
-
-
-
-void UserForm::setDatosUsuario(const QString &dni,
-                               const QString &nombre,
-                               const QString &telefono,
-                               const QString &email,
-                               const QString &departamento,
-                               const QString &empresa,
-                               const QString &estado,
-                               const QString &foto,
-                               const QString &rol)
+// Cargar datos de departamentos y empresas desde la base de datos
+void UserForm::cargarDepartamentosYEmpresas()
 {
-    modoEdicion = true;
-    dniOriginal = dni;
-
-    ui->txtDni->setText(dni);
-    ui->txtNombre->setText(nombre);
-    ui->txtTelefono->setText(telefono);
-    ui->txtEmail->setText(email);
-    ui->comboBoxDepartamento->setCurrentText(departamento);
-    ui->comboBoxEmpresa->setCurrentText(empresa);
-    ui->comboBoxEstado->setCurrentText(estado);
-    ui->txtImagen->setText(foto);
-    ui->comboBoxRol->setCurrentText(rol);
-
-    // Opcional: deshabilitar el cambio de DNI si no quieres que se pueda cambiar
-    ui->txtDni->setDisabled(true);
-}
-
-
-bool UserForm::existeUsuario(const QString &dni)
-{
-    QSqlQuery query;
-    query.prepare("SELECT COUNT(*) FROM usuarios WHERE dni = :dni");
-    query.bindValue(":dni", dni);
-    if (!query.exec()) {
-        qDebug() << "Error en consulta existeUsuario:" << query.lastError().text();
-        return false;
-    }
-    if (query.next()) {
-        return query.value(0).toInt() > 0;
-    }
-    return false;
-}
-
-void UserForm::on_btnGuardar_clicked()
-{
-    QString dni = ui->txtDni->text().trimmed();
-    QString nombre = ui->txtNombre->text().trimmed();
-    QString telefono = ui->txtTelefono->text().trimmed();
-    QString email = ui->txtEmail->text().trimmed();
-    QString departamento = ui->comboBoxDepartamento->currentText();
-    QString empresa = ui->comboBoxEmpresa->currentText();
-    QString estado = ui->comboBoxEstado->currentText();
-    QString foto = ui->txtImagen->text().trimmed();
-    QString rol = ui->comboBoxRol->currentText();
-
-    if (dni.isEmpty() || nombre.isEmpty()) {
-        QMessageBox::warning(this, "Datos incompletos", "Debe completar el DNI y el Nombre.");
-        return;
-    }
-
-    QSqlQuery query;
-
-    if (modoEdicion) {
-        // UPDATE
-        query.prepare(R"(
-            UPDATE usuarios SET
-                nombre = :nombre,
-                telefono = :telefono,
-                email = :email,
-                departamento = :departamento,
-                empresa = :empresa,
-                estado = :estado,
-                foto = :foto,
-                rol = :rol
-            WHERE dni = :dni
-        )");
-
-        query.bindValue(":dni", dniOriginal);  // Clave original
-    } else {
-        // INSERT
-        if (existeUsuario(dni)) {
-            QMessageBox::warning(this, "Error", "Ya existe un usuario con ese DNI.");
-            return;
-        }
-
-        query.prepare(R"(
-            INSERT INTO usuarios (dni, nombre, telefono, email, departamento, empresa, estado, foto, rol)
-            VALUES (:dni, :nombre, :telefono, :email, :departamento, :empresa, :estado, :foto, :rol)
-        )");
-
-        query.bindValue(":dni", dni);
-    }
-
-    // Comunes a ambos
-    query.bindValue(":nombre", nombre);
-    query.bindValue(":telefono", telefono);
-    query.bindValue(":email", email);
-    query.bindValue(":departamento", departamento);
-    query.bindValue(":empresa", empresa);
-    query.bindValue(":estado", estado);
-    query.bindValue(":foto", foto);
-    query.bindValue(":rol", rol);
-
-    if (!query.exec()) {
-        QMessageBox::critical(this, "Error al guardar", "No se pudo guardar el usuario: " + query.lastError().text());
-        return;
-    }
-
-    emit usuarioGuardado();
-    accept();
-}
-
-
-void UserForm::on_btnExaminar_clicked()
-{
-    QString archivo = QFileDialog::getOpenFileName(this,
-                                                   tr("Seleccionar imagen"),
-                                                   QString(),
-                                                   tr("Archivos de imagen (*.png *.jpg *.bmp)"));
-    if (!archivo.isEmpty()) {
-        ui->txtImagen->setText(archivo);
-    }
-}
-
-QStringList UserForm::getUsuario() const
-{
-    QStringList datos;
-    datos << ui->txtDni->text().trimmed()
-          << ui->txtNombre->text().trimmed()
-          << ui->txtTelefono->text().trimmed()
-          << ui->txtEmail->text().trimmed()
-          << ui->comboBoxDepartamento->currentText()
-          << ui->comboBoxEmpresa->currentText()
-          << ui->comboBoxEstado->currentText()
-          << ui->txtImagen->text().trimmed()
-          << ui->comboBoxRol->currentText();
-
-    return datos;
-}
-
-
-
-void UserForm::cargarListasDesdeBD()
-{
-    // Limpiamos combos
     ui->comboBoxDepartamento->clear();
     ui->comboBoxEmpresa->clear();
-    ui->comboBoxEstado->clear();
-    ui->comboBoxRol->clear();
 
-    // Cargar departamentos
-    QSqlQuery queryDep("SELECT nombre FROM departamentos ORDER BY nombre");
-    if (!queryDep.exec()) {
-        qDebug() << "Error al cargar departamentos:" << queryDep.lastError().text();
-    }
-    while (queryDep.next()) {
-        ui->comboBoxDepartamento->addItem(queryDep.value(0).toString());
-    }
+    QString error;
 
-    // Cargar empresas
-    QSqlQuery queryEmp("SELECT nombre FROM empresas ORDER BY nombre");
-    if (!queryEmp.exec()) {
-        qDebug() << "Error al cargar empresas:" << queryEmp.lastError().text();
+    // Obtener lista de departamentos
+    QList<QVariantMap> departamentos = dao->listarDepartamentos(error);
+    if (!error.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Error al cargar departamentos:\n" + error);
     }
-    while (queryEmp.next()) {
-        ui->comboBoxEmpresa->addItem(queryEmp.value(0).toString());
+    for (const QVariantMap &dep : departamentos) {
+        ui->comboBoxDepartamento->addItem(dep.value("nombre").toString(), dep.value("id"));
     }
 
-    // Cargar estados fijos
-    QStringList estados = {"Activo", "Suspendido", "Inactivo"};
-    ui->comboBoxEstado->addItems(estados);
-
-    // Cargar roles fijos
-    QStringList roles = {"AdminTotal", "AdminEmpresa", "Usuario"};
-    ui->comboBoxRol->addItems(roles);
+    // Obtener lista de empresas
+    QList<QVariantMap> empresas = dao->listarEmpresas(error);
+    if (!error.isEmpty()) {
+        QMessageBox::warning(this, "Error", "Error al cargar empresas:\n" + error);
+    }
+    for (const QVariantMap &emp : empresas) {
+        ui->comboBoxEmpresa->addItem(emp.value("nombre").toString(), emp.value("id"));
+    }
 }
 
-
-void UserForm::setModoAdminEmpresa(bool esAdminEmpresa)
+// Establecer datos en el formulario a partir de un mapa
+void UserForm::setUserData(const QVariantMap &data)
 {
-    m_esAdminEmpresa = esAdminEmpresa;
+    ui->lineEditDni->setText(data.value("dni").toString());
+    ui->lineEditNombre->setText(data.value("nombre").toString());
+    ui->lineEditTelefono->setText(data.value("telefono").toString());
+    ui->lineEditEmail->setText(data.value("email").toString());
 
-    // Si es admin_empresa, deshabilita el combo o campo empresa para que no se pueda cambiar
-    ui->comboBoxEmpresa->setEnabled(!m_esAdminEmpresa);
+    // Seleccionar departamento correspondiente
+    int idxDept = ui->comboBoxDepartamento->findData(data.value("departamento"));
+    if (idxDept != -1) ui->comboBoxDepartamento->setCurrentIndex(idxDept);
+
+    // Seleccionar empresa correspondiente
+    int idxEmp = ui->comboBoxEmpresa->findData(data.value("empresa"));
+    if (idxEmp != -1) ui->comboBoxEmpresa->setCurrentIndex(idxEmp);
+
+    // Seleccionar rol correspondiente
+    int idxRol = ui->comboBoxRol->findData(data.value("rol"));
+    if (idxRol != -1) ui->comboBoxRol->setCurrentIndex(idxRol);
+
+    // Seleccionar estado correspondiente
+    int idxEstado = ui->comboBoxEstado->findData(data.value("estado"));
+    if (idxEstado != -1) ui->comboBoxEstado->setCurrentIndex(idxEstado);
+
+    // Cargar foto si está disponible
+    QString rutaFoto = data.value("foto").toString().replace('\\', '/');
+    if (!rutaFoto.isEmpty()) {
+        QPixmap pixmap(rutaFoto);
+        if (!pixmap.isNull()) {
+            ui->labelPreviewImage->setPixmap(pixmap.scaled(ui->labelPreviewImage->size(),
+                                                           Qt::KeepAspectRatio,
+                                                           Qt::SmoothTransformation));
+            ui->lineEditFoto->setText(rutaFoto);
+        } else {
+            ui->labelPreviewImage->setText("No se pudo cargar la imagen");
+            ui->lineEditFoto->clear();
+        }
+    } else {
+        // Si no hay foto, mostrar texto por defecto
+        ui->labelPreviewImage->setText("Previsualización");
+        ui->labelPreviewImage->setPixmap(QPixmap());
+        ui->lineEditFoto->clear();
+    }
 }
 
+// Recuperar los datos del formulario en forma de QVariantMap
+QVariantMap UserForm::getUserData() const
+{
+    QVariantMap data;
+    data["dni"] = ui->lineEditDni->text().trimmed();
+    data["nombre"] = ui->lineEditNombre->text().trimmed();
+    data["telefono"] = ui->lineEditTelefono->text().trimmed();
+    data["email"] = ui->lineEditEmail->text().trimmed();
+    data["departamento"] = ui->comboBoxDepartamento->currentData();
+    data["empresa"] = ui->comboBoxEmpresa->currentData();
+    data["rol"] = ui->comboBoxRol->currentData();
+    data["estado"] = ui->comboBoxEstado->currentData();
+    data["foto"] = ui->lineEditFoto->text().trimmed();
+    return data;
+}
+
+// Botón Guardar: validaciones mínimas antes de cerrar con aceptación
+void UserForm::on_btnGuardar_clicked()
+{
+    QVariantMap usuario = getUserData();
+
+    if (usuario["dni"].toString().isEmpty()) {
+        QMessageBox::warning(this, "Validación", "El DNI es obligatorio.");
+        return;
+    }
+
+    if (usuario["nombre"].toString().isEmpty()) {
+        QMessageBox::warning(this, "Validación", "El nombre es obligatorio.");
+        return;
+    }
+
+    // Aquí se podrían añadir más validaciones (email, teléfono, etc.)
+
+    accept();  // Cierra el formulario con estado Accepted
+}
+
+// Botón Cancelar: cierra el formulario sin guardar
+void UserForm::on_btnCancelar_clicked()
+{
+    reject();  // Cierra el formulario con estado Rejected
+}
+
+// Botón para seleccionar una imagen de foto de usuario
+void UserForm::on_btnSeleccionarFoto_clicked()
+{
+    QString ruta = QFileDialog::getOpenFileName(this,
+                                                tr("Seleccionar foto"),
+                                                QDir::homePath(),
+                                                tr("Imágenes (*.png *.jpg *.jpeg *.bmp)"));
+
+    if (ruta.isEmpty())
+        return;
+
+    QFileInfo info(ruta);
+    if (!info.exists() || !info.isFile()) {
+        QMessageBox::warning(this, "Error", "Archivo no válido.");
+        return;
+    }
+
+    QPixmap pixmap;
+    if (!pixmap.load(ruta)) {
+        ui->labelPreviewImage->setPixmap(QPixmap());
+        ui->labelPreviewImage->setText("No se pudo cargar la imagen");
+        QMessageBox::warning(this, "Error", "No se pudo cargar la imagen seleccionada.");
+        return;
+    }
+
+    // Mostrar la imagen seleccionada redimensionada
+    ui->labelPreviewImage->setPixmap(pixmap.scaled(ui->labelPreviewImage->size(),
+                                                   Qt::KeepAspectRatio,
+                                                   Qt::SmoothTransformation));
+    ui->labelPreviewImage->setText("");  // Quitar texto por defecto
+    ui->lineEditFoto->setText(ruta.replace('\\', '/'));  // Guardar ruta
+}
+
+// Validación visual del campo DNI (rojo si es incorrecto)
+void UserForm::validarVisualmenteDNI(const QString &dni)
+{
+    QPalette palette = ui->lineEditDni->palette();
+
+    // Verificar longitud y formato del DNI
+    if (dni.length() != 9) {
+        palette.setColor(QPalette::Base, QColor(255, 200, 200));  // fondo rojo claro
+        ui->lineEditDni->setPalette(palette);
+        return;
+    }
+
+    QString numeros = dni.left(8);
+    QChar letra = dni.at(8).toUpper();
+
+    bool ok;
+    int num = numeros.toInt(&ok);
+    if (!ok) {
+        palette.setColor(QPalette::Base, QColor(255, 200, 200));
+        ui->lineEditDni->setPalette(palette);
+        return;
+    }
+
+    // Comprobar letra del DNI
+    static const QString letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+    int pos = num % 23;
+
+    if (letra == letras.at(pos)) {
+        palette.setColor(QPalette::Base, Qt::white);  // válido
+    } else {
+        palette.setColor(QPalette::Base, QColor(255, 200, 200));  // inválido
+    }
+
+    ui->lineEditDni->setPalette(palette);
+}

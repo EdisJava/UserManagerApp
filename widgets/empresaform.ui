@@ -6,44 +6,55 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>505</width>
-    <height>559</height>
+    <width>758</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Empresa</string>
+   <string>Gestión de Empresas</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QPushButton" name="Crear">
-     <property name="text">
-      <string>Crear</string>
-     </property>
-    </widget>
+    <widget class="QTableView" name="tableViewEmpresas"/>
    </item>
    <item>
-    <widget class="QPushButton" name="Borrar">
-     <property name="text">
-      <string>Borrar</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayoutForm">
+     <item>
+      <widget class="QLabel" name="labelNombre">
+       <property name="text">
+        <string>Nombre:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditNombre"/>
+     </item>
+    </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="Editar">
-     <property name="text">
-      <string>Editar</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="NuevoDept">
-     <property name="text">
-      <string>Añadir departamento</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QListWidget" name="listWidget"/>
+    <layout class="QHBoxLayout" name="horizontalLayoutBotones">
+     <item>
+      <widget class="QPushButton" name="btnCrear">
+       <property name="text">
+        <string>Crear</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnEditar">
+       <property name="text">
+        <string>Editar</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnBorrar">
+       <property name="text">
+        <string>Borrar</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
